@@ -1,0 +1,88 @@
+package util;
+
+import java.sql.*;
+
+public class Connect {
+	
+	// username, password, host, database, connection
+	private final String USERNAME = "root";
+	private final String PASSWORD = "";
+	private final String HOST = "localhost:3306";
+	private final String DATABASE = "scholarship";
+	private final String CONNECTION = String.format("jdbc:mysql://%s/%s", HOST, DATABASE);
+
+	private Connection con;
+	private Statement st;
+	
+	public ResultSet rs;
+	public ResultSetMetaData rsm;
+	
+	// Object singleton
+	private static Connect instance;
+	
+	// Method untuk akses object singleton
+	public static Connect getInstance() {
+		if (instance == null) {
+			instance = new Connect();
+		}
+		
+		return instance;
+	}
+	
+	private Connect() {
+		// TODO Auto-generated constructor stub
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver"); // load driver
+			
+			// Bikin connection pake driver
+			con = DriverManager.getConnection(CONNECTION, USERNAME, PASSWORD);
+			
+			// Bikin statement untuk dipake nanti saat menjalankan query
+			st = con.createStatement();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	// Bikin method untuk menjalankan query SELECT
+	public ResultSet execQuery(String query) {
+		try {
+			rs = st.executeQuery(query);
+			rsm = rs.getMetaData();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return rs;
+	}
+	
+	
+	// Bikin method untuk menjalankan query INSERT/UPDATE/DELETE
+	public void execUpdate(String query) {
+		try {
+			st.executeUpdate(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public PreparedStatement preparedStatement(String query) {
+		// Bikin PreparedStatement untuk di precompile
+		
+		PreparedStatement ps = null;
+		
+		try {
+			ps = con.prepareStatement(query);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ps;
+	}
+
+}
