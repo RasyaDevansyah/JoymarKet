@@ -13,16 +13,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
+import javafx.application.Platform;
 
 public class LoginView extends BorderPane {
 
     private UserHandler userController = new UserHandler();
 
-    private Label titleLabel;
+    private Label titleLabel, errorLabel, successLabel; // Add successLabel
     private TextField emailField;
     private PasswordField passwordField;
     private Button loginButton;
     private GridPane formGrid;
+
+    private static String registrationSuccessMessage = null; // Static field to hold the success message
 
     public LoginView() {
         initializeComponents();
@@ -32,6 +35,12 @@ public class LoginView extends BorderPane {
     private void initializeComponents() {
         titleLabel = new Label("Login");
         titleLabel.setFont(new Font("Arial", 24));
+
+        errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
+
+        successLabel = new Label(); // Initialize successLabel
+        successLabel.setStyle("-fx-text-fill: green;"); // Style the success message in green
 
         emailField = new TextField();
         emailField.setPromptText("Enter your email");
@@ -47,6 +56,14 @@ public class LoginView extends BorderPane {
         formGrid.setAlignment(Pos.CENTER);
         formGrid.setHgap(10);
         formGrid.setVgap(10);
+
+        // Display success message if available
+        if (registrationSuccessMessage != null) {
+            Platform.runLater(() -> {
+                successLabel.setText(registrationSuccessMessage);
+                registrationSuccessMessage = null; // Clear the message after displaying
+            });
+        }
     }
 
     private void saveDataUser() {
@@ -60,6 +77,7 @@ public class LoginView extends BorderPane {
             Main.getInstance().changePageTo("Products");
 
         } else {
+            errorLabel.setText("Login failed: " + result.getMessage());
             System.out.println("Login failed: " + result.getMessage());
         }
     }
@@ -69,7 +87,11 @@ public class LoginView extends BorderPane {
         formGrid.add(emailField, 1, 0);
         formGrid.add(new Label("Password:"), 0, 1);
         formGrid.add(passwordField, 1, 1);
-        formGrid.add(loginButton, 0, 2, 2, 1); // Span 2 columns
+        formGrid.add(successLabel, 0, 2, 2, 1); // Add success label
+        GridPane.setHalignment(successLabel, HPos.CENTER);
+        formGrid.add(errorLabel, 0, 3, 2, 1); // Add error label
+        GridPane.setHalignment(errorLabel, HPos.CENTER);
+        formGrid.add(loginButton, 0, 4, 2, 1); // Span 2 columns
         GridPane.setHalignment(loginButton, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
@@ -88,5 +110,10 @@ public class LoginView extends BorderPane {
 
     public String getPassword() {
         return passwordField.getText();
+    }
+
+    // Static method to set the success message
+    public static void setSuccessMessage(String message) {
+        registrationSuccessMessage = message;
     }
 }

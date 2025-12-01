@@ -67,15 +67,18 @@ public class Main extends Application {
 				mainLayout.setCenter(topupView);
 				break;
 			case "Cart":
+
 				mainLayout.setCenter(cartView);
 				break;
 			case "OrderHistory":
 				mainLayout.setCenter(orderHistoryView);
 				break;
 			case "Register":
+				registerView = new RegisterView(); // Refresh register view
 				mainLayout.setCenter(registerView);
 				break;
 			case "Login":
+				loginView = new LoginView(); // Refresh login view to show latest success message
 				mainLayout.setCenter(loginView);
 				break;
 			default:

@@ -14,9 +14,10 @@ public class Navbar extends HBox {
     private Button cartButton;
     private Button orderHistoryButton;
     private Button registerButton;
-    private Label usernameLabel;
+    private Button usernameButton;
 
     public Navbar() {
+        this.setStyle("-fx-background-color: #d5d5d5ff; -fx-padding: 5 30 5 30;");
         setupLoggedOutView();
     }
 
@@ -51,18 +52,21 @@ public class Navbar extends HBox {
         topupButton = new Button("Top-up");
         cartButton = new Button("Cart");
         orderHistoryButton = new Button("Order History");
-        usernameLabel = new Label("Welcome, " + username);
+        usernameButton = new Button("Welcome, " + username);
 
         // 2. Set the actions immediately after creating them
         productsButton.setOnAction(e -> changePageTo("Products"));
         topupButton.setOnAction(e -> changePageTo("Topup"));
         cartButton.setOnAction(e -> changePageTo("Cart"));
         orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
+        usernameButton.setOnAction(e -> {
+            // Future implementation for user profile or settings
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         setSpacing(10);
-        getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameLabel);
+        getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton);
     }
 }
