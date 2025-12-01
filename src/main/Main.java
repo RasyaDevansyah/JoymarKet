@@ -3,6 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import model.Session; // Import Session
 import model.User;
 import view.CartView;
 import view.LoginView;
@@ -15,9 +16,9 @@ import view.TopupView;
 public class Main extends Application {
 
 	private static Main instance;
-	private User currentUser;
 	private BorderPane mainLayout;
 	private Navbar navbar;
+	private Session session = Session.getInstance(); // Initialize Session
 
 	private ProductsView productsView;
 	private TopupView topupView;
@@ -56,6 +57,7 @@ public class Main extends Application {
 	}
 
 	public void changePageTo(String pageName) {
+		refreshNavbar();
 		switch (pageName) {
 			case "Products":
 				productsView = new ProductsView(); // Refresh products view
@@ -92,15 +94,9 @@ public class Main extends Application {
 		navbar.setupLoggedOutView();
 	}
 
-	public User getCurrentUser() {
-		return currentUser;
-	}
-
-	public void setCurrentUser(User user) {
-		this.currentUser = user;
-
-		if (user != null) {
-			updateNavbarForUser(user.getUsername());
+	public void refreshNavbar() {
+		if (session.isLoggedIn()) {
+			updateNavbarForUser(Session.getInstance().getCurrentUser().getUsername());
 		} else {
 			updateNavbarForGuest();
 		}

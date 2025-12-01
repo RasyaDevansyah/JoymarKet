@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
+import model.Session; // Import Session
 import model.User;
 import javafx.application.Platform;
 
@@ -53,7 +54,7 @@ public class LoginView extends BorderPane {
         loginButton = new Button("Login");
         loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
-            saveDataUser();
+            handleLogin();
         });
 
         registerLink = new Hyperlink("Don't have an account? Register"); // Initialize Hyperlink
@@ -75,7 +76,7 @@ public class LoginView extends BorderPane {
         }
     }
 
-    private void saveDataUser() {
+    private void handleLogin() {
 
         String email = getEmail();
         String password = getPassword();
@@ -83,7 +84,6 @@ public class LoginView extends BorderPane {
 
         if (result.isSuccess()) {
             System.out.println("Login successful: " + result.getMessage());
-            Main.getInstance().setCurrentUser((User) result.getData());
             Main.getInstance().changePageTo("Products");
 
 

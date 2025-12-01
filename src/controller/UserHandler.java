@@ -1,12 +1,16 @@
 package controller;
 
+import model.CustomerDAO; // Import CustomerDAO
 import model.Payload;
+import model.Session;
 import model.User;
 import model.UserDAO;
 
 public class UserHandler {
 
     UserDAO userDAO = new UserDAO();
+    CustomerDAO customerDAO = new CustomerDAO(); // Initialize CustomerDAO
+    private Session session = Session.getInstance();
 
     public void EditProfile(String fullName, String email, String password, String phone, String address) {
         // Code to edit user profile
@@ -17,6 +21,11 @@ public class UserHandler {
     }
 
     public Payload SaveDataUser(String fullName, String email, String password, String phone, String address) {
+
+        if (userDAO.getUserByEmail(email) != null) {
+            return new Payload("Email is already registered", null, false);
+        }
+
         // FullName validation
         if (fullName == null || fullName.trim().isEmpty()) {
             return new Payload("Full name cannot be empty", null, false);
@@ -55,13 +64,19 @@ public class UserHandler {
             return new Payload("Address must be at least 4 characters long", null, false);
         }
 
-        boolean result = userDAO.saveUser(fullName, password, email, phone, address, "CUSTOMER");
+        String userId = userDAO.saveUser(fullName, password, email, phone, address, "CUSTOMER");
 
-        if (!result) {
+        if (userId == null) {
             return new Payload("Failed to register user", null, false);
-        } else {
-            return new Payload("User registered successfully", null, true);
         }
+
+        // Create customer entry
+        boolean customerCreated = customerDAO.createCustomer(userId);
+        if (!customerCreated) {
+            return new Payload("Failed to create customer profile", null, false);
+        }
+
+        return new Payload("User registered successfully", null, true);
     }
 
     public Payload LoginCustomer(String email, String password) {
@@ -73,7 +88,12 @@ public class UserHandler {
         if (!user.getPassword().equals(password)) {
             return new Payload("Incorrect password", null, false);
         }
+        session.setCurrentUser(user); // Set the current user in the session
         return new Payload("Login successful", user, true);
+    }
+
+    public void LogoutCustomer() {
+        session.clearSession();
     }
 
 }

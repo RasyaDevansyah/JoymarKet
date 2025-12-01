@@ -9,22 +9,26 @@ public class UserDAO {
 
     private Connect connect = Connect.getInstance();
 
-    public boolean saveUser(String fullName, String password, String email, String phone, String address, String role) {
-        // added role to SQL
+    public String saveUser(String fullName, String password, String email, String phone, String address, String role) {
         String sql = "INSERT INTO users (full_name, password, email, phone, address, role) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+        try (PreparedStatement pstmt = connect.preparedStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, fullName);
             pstmt.setString(2, password);
             pstmt.setString(3, email);
             pstmt.setString(4, phone);
             pstmt.setString(5, address);
-            pstmt.setString(6, role); // Set the role (e.g., "CUSTOMER")
+            pstmt.setString(6, role);
             pstmt.executeUpdate();
-            return true;
+
+            try (var rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return String.valueOf(rs.getInt(1)); // Return the generated id_user
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return null; // Return null on failure
     }
 
     public User getUserByEmail(String email) {

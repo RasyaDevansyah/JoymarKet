@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
+import model.Session; // Import Session
 
 public class RegisterView extends BorderPane {
 
@@ -77,6 +78,7 @@ public class RegisterView extends BorderPane {
         Payload result = userController.SaveDataUser(name, email, password, phone, address);
 
         if (result.isSuccess()) {
+            // User is already set in Session by UserHandler
             System.out.println("Registration successful: " + result.getMessage());
             // Set success message in LoginView before changing page
             LoginView.setSuccessMessage(result.getMessage());
