@@ -2,6 +2,7 @@ package view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import controller.UserHandler;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,9 +11,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
-import model.User;
+import main.Main;
+import model.Payload;
 
 public class LoginView extends BorderPane {
+
+    private UserHandler userController = new UserHandler();
 
     private Label titleLabel;
     private TextField emailField;
@@ -35,6 +39,9 @@ public class LoginView extends BorderPane {
         passwordField.setPromptText("Enter your password");
 
         loginButton = new Button("Login");
+        loginButton.setOnAction(e -> {
+            saveDataUser();
+        });
 
         formGrid = new GridPane();
         formGrid.setAlignment(Pos.CENTER);
@@ -42,8 +49,19 @@ public class LoginView extends BorderPane {
         formGrid.setVgap(10);
     }
 
-    private void InitializeEvents() {
+    private void saveDataUser() {
 
+        String email = getEmail();
+        String password = getPassword();
+        Payload result = userController.LoginCustomer(email, password);
+
+        if (result.isSuccess()) {
+            System.out.println("Login successful: " + result.getMessage());
+            Main.getInstance().changePageTo("Products");
+
+        } else {
+            System.out.println("Login failed: " + result.getMessage());
+        }
     }
 
     private void setupLayout() {

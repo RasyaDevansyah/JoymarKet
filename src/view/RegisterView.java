@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import main.Main;
 
 public class RegisterView extends BorderPane {
 
@@ -40,6 +41,10 @@ public class RegisterView extends BorderPane {
         addressField.setPromptText("Enter your address");
 
         registerButton = new Button("Register");
+
+        registerButton.setOnAction(e -> {
+            Main.getInstance().changePageTo("Login");
+        });
 
         formGrid = new GridPane();
         formGrid.setAlignment(Pos.CENTER);
