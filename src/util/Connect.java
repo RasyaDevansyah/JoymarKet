@@ -8,7 +8,7 @@ public class Connect {
 	private final String USERNAME = "root";
 	private final String PASSWORD = "";
 	private final String HOST = "localhost:3306";
-	private final String DATABASE = "scholarship";
+	private final String DATABASE = "joymarket";
 	private final String CONNECTION = String.format("jdbc:mysql://%s/%s", HOST, DATABASE);
 
 	private Connection con;
