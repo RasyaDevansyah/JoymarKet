@@ -120,6 +120,35 @@ CREATE TABLE cart_items (
     FOREIGN KEY (id_product) REFERENCES products(id_product)
 );
 
+--
+-- Sample Data
+--
+
+-- Admin User
+INSERT INTO users (full_name, email, password, phone, address, role) VALUES
+('Admin User', 'admin@joymarket.com', 'admin', '1234567890', 'Admin Office, Joymarket Tower', 'ADMIN');
+INSERT INTO admins (id_user, emergency_contact) VALUES
+((SELECT id_user FROM users WHERE email = 'admin@joymarket.com'), 'Admin Emergency Contact');
+
+-- Courier User
+INSERT INTO users (full_name, email, password, phone, address, role) VALUES
+('Courier User', 'courier@joymarket.com', 'courier', '0987654321', 'Courier Depot, Joymarket City', 'COURIER');
+INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
+((SELECT id_user FROM users WHERE email = 'courier@joymarket.com'), 'Motorcycle', 'B 1234 XYZ');
+
+-- Products (10 products with 20 stocks each)
+INSERT INTO products (name, price, stock, category) VALUES
+('Premium Coffee Beans', 15.99, 20, 'Beverages'),
+('Organic Green Tea', 12.50, 20, 'Beverages'),
+('Artisan Bread', 5.75, 20, 'Bakery'),
+('Fresh Milk (1L)', 3.20, 20, 'Dairy'),
+('Chicken Breast (1kg)', 10.00, 20, 'Meat'),
+('Assorted Vegetables Pack', 8.99, 20, 'Produce'),
+('Local Honey (500g)', 9.50, 20, 'Pantry'),
+('Olive Oil (750ml)', 18.25, 20, 'Pantry'),
+('Dark Chocolate Bar', 4.00, 20, 'Snacks'),
+('Sparkling Water (6-pack)', 7.80, 20, 'Beverages');
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

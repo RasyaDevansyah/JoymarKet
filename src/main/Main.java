@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.User;
-import util.Connect;
 import view.CartView;
 import view.LoginView;
 import view.Navbar;
@@ -26,8 +25,6 @@ public class Main extends Application {
 	private OrderHistoryView orderHistoryView;
 	private LoginView loginView;
 	private RegisterView registerView;
-
-	private Connect connect = Connect.getInstance();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -61,13 +58,13 @@ public class Main extends Application {
 	public void changePageTo(String pageName) {
 		switch (pageName) {
 			case "Products":
+				productsView = new ProductsView(); // Refresh products view
 				mainLayout.setCenter(productsView);
 				break;
 			case "Topup":
 				mainLayout.setCenter(topupView);
 				break;
 			case "Cart":
-
 				mainLayout.setCenter(cartView);
 				break;
 			case "OrderHistory":

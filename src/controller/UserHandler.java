@@ -1,6 +1,5 @@
 package controller;
 
-import main.Main;
 import model.Payload;
 import model.User;
 import model.UserDAO;
@@ -27,7 +26,8 @@ public class UserHandler {
         if (email == null || email.trim().isEmpty()) {
             return new Payload("Email cannot be empty", null, false);
         }
-        if (!email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
+        if (!email.matches(
+                "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
             return new Payload("Invalid email format", null, false);
         }
 
@@ -51,8 +51,8 @@ public class UserHandler {
         if (address == null || address.trim().isEmpty()) {
             return new Payload("Address cannot be empty", null, false);
         }
-        if (address.length() < 10) { // Example: minimum 10 characters
-            return new Payload("Address must be at least 10 characters long", null, false);
+        if (address.length() < 4) { // Example: minimum 10 characters
+            return new Payload("Address must be at least 4 characters long", null, false);
         }
 
         boolean result = userDAO.saveUser(fullName, password, email, phone, address, "CUSTOMER");
@@ -75,7 +75,5 @@ public class UserHandler {
         }
         return new Payload("Login successful", user, true);
     }
-
-    
 
 }
