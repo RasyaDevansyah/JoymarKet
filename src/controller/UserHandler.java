@@ -66,10 +66,16 @@ public class UserHandler {
 
     public Payload LoginCustomer(String email, String password) {
 
-        User dummyUser = new User("1", "John Doe", email, password, "1234567890", "123 Main St", "Customer");
-        Main.getInstance().setCurrentUser(dummyUser);
-        Main.getInstance().updateNavbarForUser(dummyUser.getUsername());
-        return new Payload("User logged in successfully", null, true);
+        User user = userDAO.getUserByEmail(email);
+        if (user == null) {
+            return new Payload("User not found", null, false);
+        }
+        if (!user.getPassword().equals(password)) {
+            return new Payload("Incorrect password", null, false);
+        }
+        return new Payload("Login successful", user, true);
     }
+
+    
 
 }

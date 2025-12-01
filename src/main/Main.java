@@ -101,6 +101,12 @@ public class Main extends Application {
 
 	public void setCurrentUser(User user) {
 		this.currentUser = user;
+
+		if (user != null) {
+			updateNavbarForUser(user.getUsername());
+		} else {
+			updateNavbarForGuest();
+		}
 	}
 
 }

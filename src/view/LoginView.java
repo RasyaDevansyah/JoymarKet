@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import controller.UserHandler;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink; // Import Hyperlink
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -13,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
+import model.User;
 import javafx.application.Platform;
 
 public class LoginView extends BorderPane {
@@ -23,6 +25,7 @@ public class LoginView extends BorderPane {
     private TextField emailField;
     private PasswordField passwordField;
     private Button loginButton;
+    private Hyperlink registerLink; // Add Hyperlink
     private GridPane formGrid;
 
     private static String registrationSuccessMessage = null; // Static field to hold the success message
@@ -48,8 +51,14 @@ public class LoginView extends BorderPane {
         passwordField.setPromptText("Enter your password");
 
         loginButton = new Button("Login");
+        loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
             saveDataUser();
+        });
+
+        registerLink = new Hyperlink("Don't have an account? Register"); // Initialize Hyperlink
+        registerLink.setOnAction(e -> {
+            Main.getInstance().changePageTo("Register");
         });
 
         formGrid = new GridPane();
@@ -74,10 +83,13 @@ public class LoginView extends BorderPane {
 
         if (result.isSuccess()) {
             System.out.println("Login successful: " + result.getMessage());
+            Main.getInstance().setCurrentUser((User) result.getData());
             Main.getInstance().changePageTo("Products");
+
 
         } else {
             errorLabel.setText("Login failed: " + result.getMessage());
+            successLabel.setText("");
             System.out.println("Login failed: " + result.getMessage());
         }
     }
@@ -93,6 +105,8 @@ public class LoginView extends BorderPane {
         GridPane.setHalignment(errorLabel, HPos.CENTER);
         formGrid.add(loginButton, 0, 4, 2, 1); // Span 2 columns
         GridPane.setHalignment(loginButton, HPos.CENTER);
+        formGrid.add(registerLink, 0, 5, 2, 1); // Add register link
+        GridPane.setHalignment(registerLink, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
         setTop(titleLabel);
