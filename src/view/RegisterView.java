@@ -1,8 +1,8 @@
 package view;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -11,14 +11,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 
-public class RegisterView {
+public class RegisterView extends BorderPane {
 
-    private Scene scene;
-    private BorderPane borderPane;
     private Label titleLabel;
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField passwordField;
-    private Button registerButton, backButton;
+    private Button registerButton;
     private GridPane formGrid;
 
     public RegisterView() {
@@ -27,7 +25,6 @@ public class RegisterView {
     }
 
     private void initializeComponents() {
-        borderPane = new BorderPane();
         titleLabel = new Label("Register");
         titleLabel.setFont(new Font("Arial", 24));
 
@@ -43,7 +40,6 @@ public class RegisterView {
         addressField.setPromptText("Enter your address");
 
         registerButton = new Button("Register");
-        backButton = new Button("Back");
 
         formGrid = new GridPane();
         formGrid.setAlignment(Pos.CENTER);
@@ -62,27 +58,17 @@ public class RegisterView {
         formGrid.add(phoneField, 1, 3);
         formGrid.add(new Label("Address:"), 0, 4);
         formGrid.add(addressField, 1, 4);
-        formGrid.add(registerButton, 0, 5);
-        formGrid.add(backButton, 1, 5);
+        formGrid.add(registerButton, 0, 5, 2, 1); // Span 2 columns
+        GridPane.setHalignment(registerButton, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
-        borderPane.setTop(titleLabel);
-        borderPane.setCenter(formGrid);
+        setTop(titleLabel);
+        setCenter(formGrid);
         BorderPane.setMargin(titleLabel, new Insets(20));
-
-        scene = new Scene(borderPane, 500, 600);
-    }
-
-    public Scene getScene() {
-        return scene;
     }
 
     public Button getRegisterButton() {
         return registerButton;
-    }
-
-    public Button getBackButton() {
-        return backButton;
     }
 
     public String getName() {
@@ -104,4 +90,5 @@ public class RegisterView {
     public String getAddress() {
         return addressField.getText();
     }
+
 }

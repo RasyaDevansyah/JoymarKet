@@ -19,8 +19,24 @@ public class User {
             this.role = role;
         }
 
+        // New constructor for login (without idUser and role, assuming these are set later or default)
+        public User(String fullName, String email, String password, String phone, String address) {
+            this.fullName = fullName;
+            this.email = email;
+            this.password = password;
+            this.phone = phone;
+            this.address = address;
+            // idUser and role can be set to null or default values
+            this.idUser = null;
+            this.role = "Customer"; // Default role for new users
+        }
+
         public String getIdUser() {
             return idUser;
+        }
+
+        public String getUsername() {
+            return fullName;
         }
 
         public String getFullName() {
