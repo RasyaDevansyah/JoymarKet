@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.Session; // Import Session
-import model.User;
 import view.CartView;
 import view.LoginView;
 import view.Navbar;
@@ -67,6 +66,7 @@ public class Main extends Application {
 				mainLayout.setCenter(topupView);
 				break;
 			case "Cart":
+				cartView = new CartView(); // Refresh cart view
 				mainLayout.setCenter(cartView);
 				break;
 			case "OrderHistory":

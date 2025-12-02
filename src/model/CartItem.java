@@ -2,12 +2,12 @@ package model;
 
 public class CartItem {
     private String idCustomer;
-    private String idProduct;
+    private Product product; // Change from String idProduct to Product object
     private int count;
 
-    public CartItem(String idCustomer, String idProduct, int count) {
+    public CartItem(String idCustomer, Product product, int count) {
         this.idCustomer = idCustomer;
-        this.idProduct = idProduct;
+        this.product = product;
         this.count = count;
     }
 
@@ -19,12 +19,12 @@ public class CartItem {
         this.idCustomer = idCustomer;
     }
 
-    public String getIdProduct() {
-        return idProduct;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setIdProduct(String idProduct) {
-        this.idProduct = idProduct;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public int getCount() {
