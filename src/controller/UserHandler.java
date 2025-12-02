@@ -13,12 +13,15 @@ public class UserHandler {
     private Session session = Session.getInstance();
 
     public Payload EditProfile(String fullName, String email, String password, String phone, String address) {
-        // This method needs actual implementation to edit the user profile.
-        // For now, it will return a placeholder Payload.
-        // You would typically call userDAO.updateUser or similar here.
+
         User currentUser = session.getCurrentUser();
         if (currentUser == null) {
             return new Payload("No user logged in to edit profile.", null, false);
+        }
+
+        Payload validationResult = validateUserData(fullName, email, password, phone, address, true);
+        if (!validationResult.isSuccess()) {
+            return validationResult;
         }
 
         boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, password, phone, address);
@@ -45,46 +48,9 @@ public class UserHandler {
 
     public Payload SaveDataUser(String fullName, String email, String password, String phone, String address) {
 
-        if (userDAO.getUserByEmail(email) != null) {
-            return new Payload("Email is already registered", null, false);
-        }
-
-        // FullName validation
-        if (fullName == null || fullName.trim().isEmpty()) {
-            return new Payload("Full name cannot be empty", null, false);
-        }
-
-        // Email validation
-        if (email == null || email.trim().isEmpty()) {
-            return new Payload("Email cannot be empty", null, false);
-        }
-        if (!email.matches(
-                "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
-            return new Payload("Invalid email format", null, false);
-        }
-
-        // Password validation
-        if (password == null || password.trim().isEmpty()) {
-            return new Payload("Password cannot be empty", null, false);
-        }
-        if (password.length() < 6) { // Example: minimum 6 characters
-            return new Payload("Password must be at least 6 characters long", null, false);
-        }
-
-        // Phone validation
-        if (phone == null || phone.trim().isEmpty()) {
-            return new Payload("Phone number cannot be empty", null, false);
-        }
-        if (!phone.matches("^\\d+$")) { // Only digits
-            return new Payload("Phone number must contain only digits", null, false);
-        }
-
-        // Address validation
-        if (address == null || address.trim().isEmpty()) {
-            return new Payload("Address cannot be empty", null, false);
-        }
-        if (address.length() < 4) { // Example: minimum 10 characters
-            return new Payload("Address must be at least 4 characters long", null, false);
+        Payload validationResult = validateUserData(fullName, email, password, phone, address, false);
+        if (!validationResult.isSuccess()) {
+            return validationResult;
         }
 
         String userId = userDAO.saveUser(fullName, password, email, phone, address, "CUSTOMER");
@@ -118,5 +84,58 @@ public class UserHandler {
     public void LogoutCustomer() {
         session.clearSession();
     }
+    
+    private Payload validateUserData(String fullName, String email, String password, String phone, String address, boolean isEdit) {
+        // FullName validation
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return new Payload("Full name cannot be empty", null, false);
+        }
 
+        // Email validation
+        if (email == null || email.trim().isEmpty()) {
+            return new Payload("Email cannot be empty", null, false);
+        }
+        if (!email.matches(
+                "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
+            return new Payload("Invalid email format", null, false);
+        }
+        
+        User userByEmail = userDAO.getUserByEmail(email);
+        if (isEdit) {
+            User currentUser = session.getCurrentUser();
+            if (userByEmail != null && !userByEmail.getIdUser().equals(currentUser.getIdUser())) {
+                return new Payload("Email is already registered by another user", null, false);
+            }
+        } else {
+            if (userByEmail != null) {
+                return new Payload("Email is already registered", null, false);
+            }
+        }
+
+        // Password validation
+        if (password == null || password.trim().isEmpty()) {
+            return new Payload("Password cannot be empty", null, false);
+        }
+        if (password.length() < 6) { // Example: minimum 6 characters
+            return new Payload("Password must be at least 6 characters long", null, false);
+        }
+
+        // Phone validation
+        if (phone == null || phone.trim().isEmpty()) {
+            return new Payload("Phone number cannot be empty", null, false);
+        }
+        if (!phone.matches("^\\d+$")) { // Only digits
+            return new Payload("Phone number must contain only digits", null, false);
+        }
+
+        // Address validation
+        if (address == null || address.trim().isEmpty()) {
+            return new Payload("Address cannot be empty", null, false);
+        }
+        if (address.length() < 4) { // Example: minimum 10 characters
+            return new Payload("Address must be at least 4 characters long", null, false);
+        }
+
+        return new Payload("Validation successful", null, true);
+    }
 }

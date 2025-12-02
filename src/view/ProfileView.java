@@ -12,6 +12,7 @@ import controller.UserHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import main.Main;
 import model.Payload;
 import model.Session;
 import model.User;
@@ -66,7 +67,7 @@ public class ProfileView extends BorderPane {
         contentBox.setAlignment(Pos.TOP_CENTER);
         contentBox.setPadding(new Insets(20));
         contentBox.getChildren().addAll(titleLabel, formGrid);
-        
+
         setCenter(contentBox);
     }
 
@@ -98,7 +99,8 @@ public class ProfileView extends BorderPane {
             if (result.isSuccess()) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
                 // Refresh the profile view to reflect the changes
-                loadProfileData(); 
+                loadProfileData();
+                Main.getInstance().changePageTo("Products");
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
             }
