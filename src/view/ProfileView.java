@@ -21,7 +21,7 @@ public class ProfileView extends BorderPane {
 
     private UserHandler userHandler = new UserHandler();
     private TextField nameField, emailField, phoneField, addressField;
-    private PasswordField passwordField;
+    private PasswordField newPasswordField, confirmPasswordField;
     private Button saveButton;
     private Label titleLabel;
 
@@ -39,7 +39,8 @@ public class ProfileView extends BorderPane {
         emailField = new TextField();
         phoneField = new TextField();
         addressField = new TextField();
-        passwordField = new PasswordField();
+        newPasswordField = new PasswordField();
+        confirmPasswordField = new PasswordField();
 
         saveButton = new Button("Save Changes");
         saveButton.setOnAction(e -> handleSaveChanges());
@@ -59,14 +60,25 @@ public class ProfileView extends BorderPane {
         formGrid.add(phoneField, 1, 2);
         formGrid.add(new Label("Address:"), 0, 3);
         formGrid.add(addressField, 1, 3);
-        formGrid.add(new Label("Password:"), 0, 4);
-        formGrid.add(passwordField, 1, 4);
-        formGrid.add(saveButton, 1, 5);
+
+        VBox passwordSection = new VBox(10);
+        Label passwordTitle = new Label("Update Password");
+        passwordTitle.setFont(new Font("Arial", 16));
+        GridPane passwordGrid = new GridPane();
+        passwordGrid.setHgap(10);
+        passwordGrid.setVgap(10);
+        passwordGrid.add(new Label("New Password:"), 0, 0);
+        passwordGrid.add(newPasswordField, 1, 0);
+        passwordGrid.add(new Label("Confirm Password:"), 0, 1);
+        passwordGrid.add(confirmPasswordField, 1, 1);
+        passwordSection.getChildren().addAll(passwordTitle, passwordGrid);
+        passwordSection.setAlignment(Pos.CENTER);
+        passwordGrid.setAlignment(Pos.CENTER);
 
         VBox contentBox = new VBox(20);
         contentBox.setAlignment(Pos.TOP_CENTER);
         contentBox.setPadding(new Insets(20));
-        contentBox.getChildren().addAll(titleLabel, formGrid);
+        contentBox.getChildren().addAll(titleLabel, formGrid, passwordSection, saveButton);
 
         setCenter(contentBox);
     }
@@ -84,18 +96,23 @@ public class ProfileView extends BorderPane {
     private void handleSaveChanges() {
         String fullName = nameField.getText();
         String email = emailField.getText();
-        String password = passwordField.getText(); // Keep current password if empty
+        String newPassword = newPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
         String phone = phoneField.getText();
         String address = addressField.getText();
 
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
-            // Use current password if the field is empty
-            if (password == null || password.trim().isEmpty()) {
-                password = currentUser.getPassword();
+            String passwordToSave = currentUser.getPassword(); // Default to current password
+            if (!newPassword.isEmpty() || !confirmPassword.isEmpty()) {
+                if (!newPassword.equals(confirmPassword)) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match.");
+                    return;
+                }
+                passwordToSave = newPassword;
             }
 
-            Payload result = userHandler.EditProfile(fullName, email, password, phone, address);
+            Payload result = userHandler.EditProfile(fullName, email, passwordToSave, phone, address);
             if (result.isSuccess()) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
                 // Refresh the profile view to reflect the changes
