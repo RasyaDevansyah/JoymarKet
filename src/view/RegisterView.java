@@ -14,7 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
-import model.Session; // Import Session
 
 public class RegisterView extends BorderPane {
 

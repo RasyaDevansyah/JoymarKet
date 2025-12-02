@@ -4,17 +4,16 @@ import controller.ProductHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import controller.CartItemHandler;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import main.Main;
 import model.Product;
 import model.Session; // Import Session
 import model.User;
@@ -71,16 +70,19 @@ public class ProductsView extends BorderPane {
 
         TableColumn<Product, Void> addCol = new TableColumn<>("Action");
         addCol.setPrefWidth(100);
-        addCol.setCellFactory(param -> new javafx.scene.control.TableCell<Product, Void>() {
+        addCol.setCellFactory(param -> new TableCell<Product, Void>() {
             private final Button addButton = new Button("Add to Cart");
             {
                 addButton.setOnAction(event -> {
                     Product product = getTableView().getItems().get(getIndex());
-                    User currentUser = Session.getInstance().getCurrentUser(); // Get current logged in user from Session
+                    User currentUser = Session.getInstance().getCurrentUser(); // Get current logged in user from
+                                                                               // Session
                     if (currentUser != null) {
-                        boolean success = cartItemHandler.addProductToCart(currentUser.getIdUser(), product.getIdProduct(), 1);
+                        boolean success = cartItemHandler.addProductToCart(currentUser.getIdUser(),
+                                product.getIdProduct(), 1);
                         if (success) {
                             showAlert(AlertType.INFORMATION, "Success", "Product added to cart!");
+                            Main.getInstance().changePageTo("Cart");
                         } else {
                             showAlert(AlertType.ERROR, "Error", "Failed to add product to cart.");
                         }

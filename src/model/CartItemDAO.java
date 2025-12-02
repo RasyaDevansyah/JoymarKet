@@ -52,4 +52,31 @@ public class CartItemDAO {
         }
         return cartItems;
     }
+
+    public boolean updateCartItemQuantity(String idCustomer, String idProduct, int count) {
+        String sql = "UPDATE cart_items SET count = ? WHERE id_customer = ? AND id_product = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setInt(1, count);
+            pstmt.setString(2, idCustomer);
+            pstmt.setString(3, idProduct);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteCartItem(String idCustomer, String idProduct) {
+        String sql = "DELETE FROM cart_items WHERE id_customer = ? AND id_product = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, idCustomer);
+            pstmt.setString(2, idProduct);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

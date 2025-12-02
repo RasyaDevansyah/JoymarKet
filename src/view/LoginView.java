@@ -14,8 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
-import model.Session; // Import Session
-import model.User;
 import javafx.application.Platform;
 
 public class LoginView extends BorderPane {
@@ -85,7 +83,6 @@ public class LoginView extends BorderPane {
         if (result.isSuccess()) {
             System.out.println("Login successful: " + result.getMessage());
             Main.getInstance().changePageTo("Products");
-
 
         } else {
             errorLabel.setText("Login failed: " + result.getMessage());
