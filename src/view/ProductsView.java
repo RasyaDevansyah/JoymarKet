@@ -15,10 +15,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Product;
-import model.Session; // Import Session
+import model.Session;
 import model.User;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import java.util.List;
+import java.util.ArrayList;
+import model.Payload;
 
 public class ProductsView extends BorderPane {
 
@@ -40,8 +43,8 @@ public class ProductsView extends BorderPane {
         loadProductData();
 
         VBox contentBox = new VBox(10);
-        contentBox.setAlignment(Pos.TOP_CENTER); // Align to top center
-        contentBox.setPadding(new Insets(20, 0, 0, 0)); // Add 20 padding at the top
+        contentBox.setAlignment(Pos.TOP_CENTER);
+        contentBox.setPadding(new Insets(20, 0, 0, 0));
         contentBox.getChildren().addAll(title, productTable);
 
         setCenter(contentBox);
@@ -75,16 +78,15 @@ public class ProductsView extends BorderPane {
             {
                 addButton.setOnAction(event -> {
                     Product product = getTableView().getItems().get(getIndex());
-                    User currentUser = Session.getInstance().getCurrentUser(); // Get current logged in user from
-                                                                               // Session
+                    User currentUser = Session.getInstance().getCurrentUser();
                     if (currentUser != null) {
-                        boolean success = cartItemHandler.addProductToCart(currentUser.getIdUser(),
+                        Payload payload = cartItemHandler.addProductToCart(currentUser.getIdUser(),
                                 product.getIdProduct(), 1);
-                        if (success) {
+                        if (payload.isSuccess()) {
                             showAlert(AlertType.INFORMATION, "Success", "Product added to cart!");
                             Main.getInstance().changePageTo("Cart");
                         } else {
-                            showAlert(AlertType.ERROR, "Error", "Failed to add product to cart.");
+                            showAlert(AlertType.ERROR, "Error", "Failed to add product to cart: " + payload.getMessage());
                         }
                     } else {
                         showAlert(AlertType.WARNING, "Login Required", "Please log in to add products to cart.");
@@ -116,6 +118,13 @@ public class ProductsView extends BorderPane {
 
     private void loadProductData() {
         productTable.getItems().clear();
-        productTable.getItems().addAll(productHandler.getAllProducts());
+        Payload payload = productHandler.getAllProducts();
+        if (payload.isSuccess() && payload.getData() instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Product> products = (List<Product>) payload.getData();
+            productTable.getItems().addAll(products);
+        } else {
+            showAlert(AlertType.ERROR, "Error", "Failed to load products: " + payload.getMessage());
+        }
     }
 }

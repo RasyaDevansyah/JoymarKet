@@ -53,4 +53,42 @@ public class UserDAO {
         return null;
     }
 
+    public boolean updateUser(String idUser, String fullName, String email, String password, String phone, String address) {
+        String sql = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, address = ? WHERE id_user = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, fullName);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.setString(4, phone);
+            pstmt.setString(5, address);
+            pstmt.setString(6, idUser);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public User getUserById(String idUser) {
+        String sql = "SELECT * FROM users WHERE id_user = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, idUser);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new User(
+                    rs.getString("id_user"),
+                    rs.getString("full_name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getString("phone"),
+                    rs.getString("address"),
+                    rs.getString("role")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

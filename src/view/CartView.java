@@ -1,13 +1,19 @@
 package view;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.ArrayList;
 
 import controller.CartItemHandler;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
@@ -18,15 +24,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import main.Main;
 import model.CartItem;
+import model.Payload;
 import model.Session;
 import model.User;
-
-import java.util.Optional;
 
 public class CartView extends BorderPane {
 
@@ -102,23 +104,20 @@ public class CartView extends BorderPane {
             }
         });
 
-        // --- COLUMN 3: Quantity (THE FIX IS HERE) ---
+        // --- COLUMN 3: Quantity ---
         TableColumn<CartItem, Integer> quantityCol = new TableColumn<>("Quantity");
         quantityCol.setPrefWidth(100);
         quantityCol.setCellValueFactory(new PropertyValueFactory<>("count"));
 
         quantityCol.setCellFactory(column -> new TableCell<CartItem, Integer>() {
             private final Spinner<Integer> spinner = new Spinner<>(1, 99, 1);
-            // Flag to prevent loop
             private boolean isUpdating = false;
 
             {
                 spinner.setPrefWidth(80);
                 spinner.setEditable(true);
 
-                // Listener for spinner value changes
                 spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
-                    // STOP if we are currently inside updateItem (programmatic change)
                     if (isUpdating) {
                         return;
                     }
@@ -129,15 +128,12 @@ public class CartView extends BorderPane {
                             CartItem item = getTableView().getItems().get(index);
                             item.setCount(newValue);
 
-                            // Update DB
-                            cartItemHandler.updateCartItem(item);
+                            Payload payload = cartItemHandler.updateCartItem(item);
+                            if (!payload.isSuccess()) {
+                                System.err.println("Error updating cart item: " + payload.getMessage());
+                            }
 
-                            // Update UI Total safely
                             updateTotal();
-
-                            // NOTE: Do NOT call getTableView().refresh() here.
-                            // It is unnecessary because the Spinner already shows the new value.
-                            // Calling refresh() here causes the loop.
                         }
                     }
                 });
@@ -150,10 +146,8 @@ public class CartView extends BorderPane {
                 if (empty || quantity == null) {
                     setGraphic(null);
                 } else {
-                    // Set flag to TRUE before setting value
                     isUpdating = true;
                     spinner.getValueFactory().setValue(quantity);
-                    // Set flag to FALSE after setting value
                     isUpdating = false;
 
                     setGraphic(spinner);
@@ -181,23 +175,31 @@ public class CartView extends BorderPane {
             }
         });
 
-        // --- COLUMN 5: Delete Button (CLEANED UP) ---
+        // --- COLUMN 5: Delete Button ---
         TableColumn<CartItem, Void> deleteCol = new TableColumn<>("Action");
         deleteCol.setPrefWidth(120);
-
-        // Ideally, add a dummy value factory for Void columns to ensure cells
-        // initialize correctly
         deleteCol.setCellValueFactory(param -> new SimpleObjectProperty<>(null));
 
         deleteCol.setCellFactory(column -> new TableCell<CartItem, Void>() {
             private final Button deleteButton = new Button("Delete");
+            private final HBox pane = new HBox(deleteButton); // Wrap button in HBox
 
             {
                 deleteButton.setPrefWidth(80);
                 deleteButton.setAlignment(Pos.CENTER);
+                deleteButton.setPickOnBounds(true);
 
-                // Removed Platform.runLater wrapping - it's not needed for click handlers
+                pane.setAlignment(Pos.CENTER);
+
+                pane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
+                    if (event.getTarget() == deleteButton) {
+                        deleteButton.fire();
+                        event.consume();
+                    }
+                });
+
                 deleteButton.setOnAction(event -> {
+                    System.out.println("Delete button action fired for item at index: " + getIndex());
                     CartItem item = getTableView().getItems().get(getIndex());
                     if (item != null) {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -207,8 +209,13 @@ public class CartView extends BorderPane {
 
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK) {
-                            cartItemHandler.removeCartItem(item);
-                            loadCartData(); // This refreshes the table
+                            Payload payload = cartItemHandler.removeCartItem(item);
+                            if (!payload.isSuccess()) {
+                                System.err.println("Error removing cart item: " + payload.getMessage());
+                            }
+                            Platform.runLater(() -> {
+                                loadCartData();
+                            });
                         }
                     }
                 });
@@ -220,7 +227,7 @@ public class CartView extends BorderPane {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(deleteButton);
+                    setGraphic(pane);
                     setAlignment(Pos.CENTER);
                 }
             }
@@ -233,11 +240,17 @@ public class CartView extends BorderPane {
         cartTable.getItems().clear();
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
-            List<CartItem> items = cartItemHandler.getCartItems();
-            cartTable.getItems().addAll(items);
-            updateTotal();
+            Payload payload = cartItemHandler.getCartItems();
+            if (payload.isSuccess() && payload.getData() instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<CartItem> items = (List<CartItem>) payload.getData();
+                cartTable.getItems().addAll(items);
+                updateTotal();
+            } else {
+                System.err.println("Error loading cart data: " + payload.getMessage());
+                totalLabel.setText("Failed to load cart. " + payload.getMessage());
+            }
         } else {
-            // Optionally, show a message that user needs to log in
             totalLabel.setText("Please log in to view your cart.");
         }
     }

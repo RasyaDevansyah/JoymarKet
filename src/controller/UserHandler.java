@@ -12,12 +12,35 @@ public class UserHandler {
     CustomerDAO customerDAO = new CustomerDAO(); // Initialize CustomerDAO
     private Session session = Session.getInstance();
 
-    public void EditProfile(String fullName, String email, String password, String phone, String address) {
-        // Code to edit user profile
+    public Payload EditProfile(String fullName, String email, String password, String phone, String address) {
+        // This method needs actual implementation to edit the user profile.
+        // For now, it will return a placeholder Payload.
+        // You would typically call userDAO.updateUser or similar here.
+        User currentUser = session.getCurrentUser();
+        if (currentUser == null) {
+            return new Payload("No user logged in to edit profile.", null, false);
+        }
+
+        boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, password, phone, address);
+        if (success) {
+            // Update session user with new details
+            currentUser.setFullName(fullName);
+            currentUser.setEmail(email);
+            currentUser.setPassword(password);
+            currentUser.setPhone(phone);
+            currentUser.setAddress(address);
+            return new Payload("Profile updated successfully.", currentUser, true);
+        } else {
+            return new Payload("Failed to update profile.", null, false);
+        }
     }
 
-    public void GetUser(String idUser) {
-        // Code to get user information
+    public Payload GetUser(String idUser) {
+        User user = userDAO.getUserById(idUser);
+        if (user != null) {
+            return new Payload("User retrieved successfully.", user, true);
+        }
+        return new Payload("User not found.", null, false);
     }
 
     public Payload SaveDataUser(String fullName, String email, String password, String phone, String address) {
