@@ -74,7 +74,7 @@ public class RegisterView extends BorderPane {
         String phone = getPhone();
         String address = getAddress();
 
-        Payload result = userController.SaveDataUser(name, email, password, phone, address);
+        Payload result = userController.SaveDataCustomer(name, email, password, phone, address);
 
         if (result.isSuccess()) {
             // User is already set in Session by UserHandler

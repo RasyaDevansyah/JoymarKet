@@ -2,7 +2,6 @@ package view;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 import controller.CartItemHandler;
 import javafx.application.Platform;

@@ -46,7 +46,7 @@ public class UserHandler {
         return new Payload("User not found.", null, false);
     }
 
-    public Payload SaveDataUser(String fullName, String email, String password, String phone, String address) {
+    public Payload SaveDataCustomer(String fullName, String email, String password, String phone, String address) {
 
         Payload validationResult = validateUserData(fullName, email, password, phone, address, false);
         if (!validationResult.isSuccess()) {
@@ -84,8 +84,9 @@ public class UserHandler {
     public void LogoutCustomer() {
         session.clearSession();
     }
-    
-    private Payload validateUserData(String fullName, String email, String password, String phone, String address, boolean isEdit) {
+
+    private Payload validateUserData(String fullName, String email, String password, String phone, String address,
+            boolean isEdit) {
         // FullName validation
         if (fullName == null || fullName.trim().isEmpty()) {
             return new Payload("Full name cannot be empty", null, false);
@@ -99,7 +100,7 @@ public class UserHandler {
                 "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
             return new Payload("Invalid email format", null, false);
         }
-        
+
         User userByEmail = userDAO.getUserByEmail(email);
         if (isEdit) {
             User currentUser = session.getCurrentUser();
