@@ -9,6 +9,7 @@ import view.LoginView;
 import view.Navbar;
 import view.OrderHistoryView;
 import view.ProductsView;
+import view.ProfileView; // Import ProfileView
 import view.RegisterView;
 import view.TopupView;
 
@@ -25,6 +26,7 @@ public class Main extends Application {
 	private OrderHistoryView orderHistoryView;
 	private LoginView loginView;
 	private RegisterView registerView;
+	private ProfileView profileView; // Add ProfileView
 
 	public static void main(String[] args) {
 		launch(args);
@@ -45,6 +47,7 @@ public class Main extends Application {
 		orderHistoryView = new OrderHistoryView();
 		loginView = new LoginView();
 		registerView = new RegisterView();
+		profileView = new ProfileView(); // Initialize ProfileView
 
 		mainLayout = new BorderPane();
 		mainLayout.setCenter(productsView); // Default view
@@ -79,6 +82,10 @@ public class Main extends Application {
 			case "Login":
 				loginView = new LoginView(); // Refresh login view to show latest success message
 				mainLayout.setCenter(loginView);
+				break;
+			case "Profile":
+				profileView = new ProfileView(); // Refresh profile view
+				mainLayout.setCenter(profileView);
 				break;
 			default:
 				mainLayout.setCenter(productsView); // Fallback to products view

@@ -58,9 +58,7 @@ public class Navbar extends HBox {
         topupButton.setOnAction(e -> changePageTo("Topup"));
         cartButton.setOnAction(e -> changePageTo("Cart"));
         orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
-        usernameButton.setOnAction(e -> {
-            // Future implementation for user profile or settings
-        });
+        usernameButton.setOnAction(e -> changePageTo("Profile"));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

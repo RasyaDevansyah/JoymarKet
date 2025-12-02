@@ -5,13 +5,13 @@ import model.CartItemDAO;
 import model.Session;
 
 import java.util.List;
-import model.Payload; // Import Payload
-import java.util.ArrayList; // Import ArrayList
+import model.Payload;
+import java.util.ArrayList;
 
 public class CartItemHandler {
     private CartItemDAO cartItemDAO = new CartItemDAO();
     private Session session = Session.getInstance();
-    
+
     public Payload addProductToCart(String userId, String productId, int quantity) {
         if (userId == null || productId == null || quantity <= 0) {
             return new Payload("Invalid input for adding product to cart.", null, false);
@@ -48,7 +48,8 @@ public class CartItemHandler {
             }
             return new Payload("Failed to remove cart item.", null, false);
         } else {
-            if (cartItemDAO.updateCartItemQuantity(cartItem.getIdCustomer(), cartItem.getProduct().getIdProduct(), cartItem.getCount())) {
+            if (cartItemDAO.updateCartItemQuantity(cartItem.getIdCustomer(), cartItem.getProduct().getIdProduct(),
+                    cartItem.getCount())) {
                 return new Payload("Cart item quantity updated successfully.", null, true);
             }
             return new Payload("Failed to update cart item quantity.", null, false);

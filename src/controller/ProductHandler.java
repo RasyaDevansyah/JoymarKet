@@ -3,8 +3,8 @@ package controller;
 import java.util.List;
 import model.Product;
 import model.ProductDAO;
-import model.Payload; // Import Payload
-import java.util.ArrayList; // Import ArrayList
+import model.Payload;
+import java.util.ArrayList;
 
 public class ProductHandler {
 

@@ -27,6 +27,7 @@ import javafx.scene.text.Font;
 import main.Main;
 import model.CartItem;
 import model.Payload;
+import model.Product;
 import model.Session;
 import model.User;
 
@@ -110,7 +111,7 @@ public class CartView extends BorderPane {
         quantityCol.setCellValueFactory(new PropertyValueFactory<>("count"));
 
         quantityCol.setCellFactory(column -> new TableCell<CartItem, Integer>() {
-            private final Spinner<Integer> spinner = new Spinner<>(1, 99, 1);
+            private final Spinner<Integer> spinner = new Spinner<>();
             private boolean isUpdating = false;
 
             {
@@ -132,7 +133,8 @@ public class CartView extends BorderPane {
                             if (!payload.isSuccess()) {
                                 System.err.println("Error updating cart item: " + payload.getMessage());
                             }
-
+                            
+                            getTableView().refresh(); // Refresh table to update subtotal
                             updateTotal();
                         }
                     }
@@ -147,7 +149,13 @@ public class CartView extends BorderPane {
                     setGraphic(null);
                 } else {
                     isUpdating = true;
-                    spinner.getValueFactory().setValue(quantity);
+                    CartItem item = getTableView().getItems().get(getIndex());
+                    Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
+                    if (product != null) {
+                        spinner.setValueFactory(new Spinner<Integer>(1, product.getStock(), quantity).getValueFactory());
+                    } else {
+                        spinner.setValueFactory(new Spinner<Integer>(1, 99, quantity).getValueFactory());
+                    }
                     isUpdating = false;
 
                     setGraphic(spinner);

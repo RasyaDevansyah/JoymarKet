@@ -38,14 +38,13 @@ public class UserDAO {
             var rs = pstmt.executeQuery();
             if (rs.next()) {
                 return new User(
-                    rs.getString("id_user"),
-                    rs.getString("full_name"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getString("role")
-                );
+                        rs.getString("id_user"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("role"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +52,8 @@ public class UserDAO {
         return null;
     }
 
-    public boolean updateUser(String idUser, String fullName, String email, String password, String phone, String address) {
+    public boolean updateUser(String idUser, String fullName, String email, String password, String phone,
+            String address) {
         String sql = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, address = ? WHERE id_user = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, fullName);
@@ -77,14 +77,13 @@ public class UserDAO {
             var rs = pstmt.executeQuery();
             if (rs.next()) {
                 return new User(
-                    rs.getString("id_user"),
-                    rs.getString("full_name"),
-                    rs.getString("email"),
-                    rs.getString("password"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getString("role")
-                );
+                        rs.getString("id_user"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("role"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
