@@ -6,7 +6,7 @@ public class Courier extends User {
 
     public Courier(String idUser, String fullName, String email, String password, String phone, String address,
             String vehicleType, String vehiclePlate) {
-        super(idUser, fullName, email, password, phone, address, "COURIER");
+        super(idUser, fullName, email, password, phone, address, "COURIER"); // Explicitly set role as COURIER
         this.vehicleType = vehicleType;
         this.vehiclePlate = vehiclePlate;
     }
