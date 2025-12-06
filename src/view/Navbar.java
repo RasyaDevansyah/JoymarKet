@@ -29,7 +29,6 @@ public class Navbar extends HBox {
         setupLoggedOutView();
     }
 
-    // Helper method to keep code clean
     public void changePageTo(String pageName) {
         Main.getInstance().changePageTo(pageName);
     }
@@ -37,11 +36,9 @@ public class Navbar extends HBox {
     public void setupLoggedOutView() {
         getChildren().clear();
 
-        // 1. Initialize the buttons specifically for this view
         productsButton = new Button("Products");
         registerButton = new Button("Register");
 
-        // 2. Set the actions immediately after creating them
         productsButton.setOnAction(e -> changePageTo("Products"));
         registerButton.setOnAction(e -> changePageTo("Register"));
 
@@ -61,7 +58,6 @@ public class Navbar extends HBox {
             return;
         }
 
-        // Common button for all logged-in users
         usernameButton = new Button("Welcome, " + username);
         usernameButton.setOnAction(e -> changePageTo("Profile"));
 
@@ -70,7 +66,6 @@ public class Navbar extends HBox {
 
         setSpacing(10);
 
-        // Add buttons based on user role
         switch (currentUser.getRole()) {
             case "CUSTOMER":
                 productsButton = new Button("Products");
@@ -90,7 +85,7 @@ public class Navbar extends HBox {
                 productsButton = new Button("Products");
                 viewAllCouriersButton = new Button("Couriers");
                 viewAllOrdersButton = new Button("All Orders");
-                // Set actions for admin buttons (will need to implement these views later)
+                
                 productsButton.setOnAction(e -> changePageTo("Products"));
                 viewAllCouriersButton.setOnAction(e -> changePageTo("ViewAllCouriers"));
                 viewAllOrdersButton.setOnAction(e -> changePageTo("ViewAllOrders"));

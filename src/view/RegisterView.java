@@ -21,7 +21,7 @@ public class RegisterView extends BorderPane {
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField passwordField;
     private Button registerButton;
-    private Hyperlink loginLink; // Add Hyperlink
+    private Hyperlink loginLink;
     private GridPane formGrid;
 
     public RegisterView() {
@@ -34,7 +34,7 @@ public class RegisterView extends BorderPane {
         titleLabel.setFont(new Font("Arial", 24));
 
         errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red;"); // Style the error message in red
+        errorLabel.setStyle("-fx-text-fill: red;"); 
 
         nameField = new TextField();
         nameField.setPromptText("Enter your full name");
@@ -53,7 +53,7 @@ public class RegisterView extends BorderPane {
             register();
         });
 
-        loginLink = new Hyperlink("Already have an account? Login"); // Initialize Hyperlink
+        loginLink = new Hyperlink("Already have an account? Login"); 
         loginLink.setOnAction(e -> {
             Main.getInstance().changePageTo("Login");
         });
@@ -65,7 +65,7 @@ public class RegisterView extends BorderPane {
     }
 
     private void register() {
-        errorLabel.setText(""); // Clear previous errors
+        errorLabel.setText("");
 
         UserHandler userController = new UserHandler();
         String name = getName();

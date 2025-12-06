@@ -26,7 +26,7 @@ CREATE TABLE users (
         password VARCHAR(255) NOT NULL,
         phone VARCHAR(20),
         address TEXT,
-        role ENUM('ADMIN', 'CUSTOMER', 'COURIER') NOT NULL
+        role ENUM("ADMIN", "CUSTOMER", "COURIER") NOT NULL
 );
 
 -- 2. Subclass Table: Admin
@@ -124,33 +124,57 @@ CREATE TABLE cart_items (
 -- Sample Data
 --
 
--- Admin User
+-- Admin User (1)
 INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-('Admin User', 'admin@joymarket.com', 'admin', '1234567890', 'Admin Office, Joymarket Tower', 'ADMIN');
+("Admin User", "admin@joymarket.com", "12345678", "1234567890", "Admin Office, Joymarket Tower", "ADMIN");
 INSERT INTO admins (id_user, emergency_contact) VALUES
-((SELECT id_user FROM users WHERE email = 'admin@joymarket.com'), 'Admin Emergency Contact');
+((SELECT id_user FROM users WHERE email = "admin@joymarket.com"), "Admin Emergency Contact");
 
--- Courier User
+-- Customer User (1)
 INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-('Courier User', 'courier@joymarket.com', 'courier', '0987654321', 'Courier Depot, Joymarket City', 'COURIER');
-INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
-((SELECT id_user FROM users WHERE email = 'courier@joymarket.com'), 'Motorcycle', 'B 1234 XYZ');
+("Customer User", "customer@joymarket.com", "12345678", "0812345678", "Customer Home, Joymarket City", "CUSTOMER");
+INSERT INTO customers (id_user, balance) VALUES
+((SELECT id_user FROM users WHERE email = "customer@joymarket.com"), 1000.00);
 
--- Products (10 products with 20 stocks each)
+-- Courier Users (3)
+INSERT INTO users (full_name, email, password, phone, address, role) VALUES
+("Courier User 1", "courier1@joymarket.com", "12345678", "0821000001", "Courier Depot 1, Joymarket City", "COURIER");
+INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
+((SELECT id_user FROM users WHERE email = "courier1@joymarket.com"), "Motorcycle", "B 1001 ABC");
+
+INSERT INTO users (full_name, email, password, phone, address, role) VALUES
+("Courier User 2", "courier2@joymarket.com", "12345678", "0821000002", "Courier Depot 2, Joymarket City", "COURIER");
+INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
+((SELECT id_user FROM users WHERE email = "courier2@joymarket.com"), "Car", "B 2002 DEF");
+
+INSERT INTO users (full_name, email, password, phone, address, role) VALUES
+("Courier User 3", "courier3@joymarket.com", "12345678", "0821000003", "Courier Depot 3, Joymarket City", "COURIER");
+INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
+((SELECT id_user FROM users WHERE email = "courier3@joymarket.com"), "Van", "B 3003 GHI");
+
+-- Products (10 products with 20 stocks each) - unchanged from original
 INSERT INTO products (name, price, stock, category) VALUES
-('Premium Coffee Beans', 15.99, 20, 'Beverages'),
-('Organic Green Tea', 12.50, 20, 'Beverages'),
-('Artisan Bread', 5.75, 20, 'Bakery'),
-('Fresh Milk (1L)', 3.20, 20, 'Dairy'),
-('Chicken Breast (1kg)', 10.00, 20, 'Meat'),
-('Assorted Vegetables Pack', 8.99, 20, 'Produce'),
-('Local Honey (500g)', 9.50, 20, 'Pantry'),
-('Olive Oil (750ml)', 18.25, 20, 'Pantry'),
-('Dark Chocolate Bar', 4.00, 20, 'Snacks'),
-('Sparkling Water (6-pack)', 7.80, 20, 'Beverages');
+("Premium Coffee Beans", 15.99, 20, "Beverages"),
+("Organic Green Tea", 12.50, 20, "Beverages"),
+("Artisan Bread", 5.75, 20, "Bakery"),
+("Fresh Milk (1L)", 3.20, 20, "Dairy"),
+("Chicken Breast (1kg)", 10.00, 20, "Meat"),
+("Assorted Vegetables Pack", 8.99, 20, "Produce"),
+("Local Honey (500g)", 9.50, 20, "Pantry"),
+("Olive Oil (750ml)", 18.25, 20, "Pantry"),
+("Dark Chocolate Bar", 4.00, 20, "Snacks"),
+("Sparkling Water (6-pack)", 7.80, 20, "Beverages");
+
+-- Promos (3)
+INSERT INTO promos (code, headline, discount_percentage) VALUES
+("SAVE10", "Get 10% off your first order!", 10.00);
+INSERT INTO promos (code, headline, discount_percentage) VALUES
+("FREEDELIVERY", "Free delivery on orders over $50!", 100.00);
+INSERT INTO promos (code, headline, discount_percentage) VALUES
+("HALFOFF", "50% off selected items!", 50.00);
 
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@@COLLATION_CONNECTION */;

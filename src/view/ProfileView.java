@@ -47,7 +47,7 @@ public class ProfileView extends BorderPane {
         saveButton.setOnAction(e -> handleSaveChanges());
 
         logoutButton = new Button("Logout");
-        logoutButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;"); // Red button for logout
+        logoutButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
         logoutButton.setOnAction(e -> handleLogout());
     }
 
