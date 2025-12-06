@@ -64,4 +64,19 @@ public class ProductDAO {
             return false;
         }
     }
+
+    public boolean updateProduct(Product product) {
+        String sql = "UPDATE products SET name = ?, price = ?, stock = ?, category = ? WHERE id_product = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, product.getName());
+            pstmt.setDouble(2, product.getPrice());
+            pstmt.setInt(3, product.getStock());
+            pstmt.setString(4, product.getCategory());
+            pstmt.setString(5, product.getIdProduct());
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

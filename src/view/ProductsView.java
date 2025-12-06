@@ -75,6 +75,8 @@ public class ProductsView extends BorderPane {
         addCol.setPrefWidth(100);
         addCol.setCellFactory(param -> new TableCell<Product, Void>() {
             private final Button addButton = new Button("Add to Cart");
+            private final Button editButton = new Button("Edit");
+
             {
                 addButton.setOnAction(event -> {
                     Product product = getTableView().getItems().get(getIndex());
@@ -92,6 +94,11 @@ public class ProductsView extends BorderPane {
                         showAlert(AlertType.WARNING, "Login Required", "Please log in to add products to cart.");
                     }
                 });
+
+                editButton.setOnAction(event -> {
+                    Product product = getTableView().getItems().get(getIndex());
+                    Main.getInstance().changePageTo("EditProduct", product.getIdProduct());
+                });
             }
 
             @Override
@@ -100,7 +107,12 @@ public class ProductsView extends BorderPane {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(addButton);
+                    User currentUser = Session.getInstance().getCurrentUser();
+                    if (currentUser != null && currentUser instanceof model.Admin) {
+                        setGraphic(editButton);
+                    } else {
+                        setGraphic(addButton);
+                    }
                 }
             }
         });

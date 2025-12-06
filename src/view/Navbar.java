@@ -86,23 +86,27 @@ public class Navbar extends HBox {
                 topupButton.setOnAction(e -> changePageTo("Topup"));
                 cartButton.setOnAction(e -> changePageTo("Cart"));
                 orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
-                
-                getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton, logoutButton);
+
+                getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton,
+                        usernameButton, logoutButton);
                 break;
             case "ADMIN":
+                productsButton = new Button("Products");
                 addProductButton = new Button("Add Product");
                 assignOrderButton = new Button("Assign Order");
                 // Set actions for admin buttons (will need to implement these views later)
+                productsButton.setOnAction(e -> changePageTo("Products"));
                 addProductButton.setOnAction(e -> System.out.println("Add Product clicked")); // Placeholder
                 assignOrderButton.setOnAction(e -> System.out.println("Assign Order clicked")); // Placeholder
-                
-                getChildren().addAll(addProductButton, assignOrderButton, spacer, usernameButton, logoutButton);
+
+                getChildren().addAll(productsButton, addProductButton, assignOrderButton, spacer, usernameButton,
+                        logoutButton);
                 break;
             case "COURIER":
                 editDeliveryStatusButton = new Button("Edit Delivery Status");
                 // Set action for courier button (will need to implement this view later)
                 editDeliveryStatusButton.setOnAction(e -> System.out.println("Edit Delivery Status clicked")); // Placeholder
-                
+
                 getChildren().addAll(editDeliveryStatusButton, spacer, usernameButton, logoutButton);
                 break;
             default:

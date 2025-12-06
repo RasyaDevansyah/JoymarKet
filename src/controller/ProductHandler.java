@@ -17,4 +17,20 @@ public class ProductHandler {
         }
         return new Payload("Failed to retrieve products.", new ArrayList<Product>(), false);
     }
+
+    public Payload getProductById(String productId) {
+        Product product = productDAO.getProductById(productId);
+        if (product != null) {
+            return new Payload("Product retrieved successfully.", product, true);
+        }
+        return new Payload("Failed to retrieve product.", null, false);
+    }
+
+    public Payload updateProduct(String productId, String name, double price, int stock, String category) {
+        Product product = new Product(productId, name, price, stock, category);
+        if (productDAO.updateProduct(product)) {
+            return new Payload("Product updated successfully.", null, true);
+        }
+        return new Payload("Failed to update product.", null, false);
+    }
 }

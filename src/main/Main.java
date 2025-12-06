@@ -13,6 +13,7 @@ import view.ProductsView;
 import view.AddProductView; // Import AddProductView
 import view.AssignOrderView; // Import AssignOrderView
 import view.EditDeliveryStatusView; // Import EditDeliveryStatusView
+import view.EditProductView;
 import view.ProfileView; // Import ProfileView
 import view.RegisterView;
 import view.TopupView;
@@ -37,6 +38,7 @@ public class Main extends Application {
 	private AddProductView addProductView;
 	private AssignOrderView assignOrderView;
 	private EditDeliveryStatusView editDeliveryStatusView;
+	private EditProductView editProductView;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -125,6 +127,16 @@ public class Main extends Application {
 			case "EditDeliveryStatus": // New Courier view
 				editDeliveryStatusView = new EditDeliveryStatusView();
 				mainLayout.setCenter(editDeliveryStatusView);
+				break;
+			case "EditProduct":
+				if (params.length > 0) {
+					String productId = params[0];
+					editProductView = new EditProductView(productId);
+					mainLayout.setCenter(editProductView);
+				} else {
+					System.err.println("Product ID not provided for EditProductView.");
+					mainLayout.setCenter(productsView);
+				}
 				break;
 			default:
 				mainLayout.setCenter(productsView); // Fallback to products view
