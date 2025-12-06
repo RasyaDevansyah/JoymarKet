@@ -3,6 +3,8 @@ package model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import util.Connect;
 
@@ -53,5 +55,25 @@ public class DeliveryDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Delivery> getDeliveriesByCourierId(String courierId) {
+        List<Delivery> deliveries = new ArrayList<>();
+        String sql = "SELECT id_order, id_courier, status FROM deliveries WHERE id_courier = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setInt(1, Integer.parseInt(courierId));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    deliveries.add(new Delivery(
+                        String.valueOf(rs.getInt("id_order")),
+                        String.valueOf(rs.getInt("id_courier")),
+                        rs.getString("status")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return deliveries;
     }
 }

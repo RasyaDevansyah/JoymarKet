@@ -133,4 +133,20 @@ public class OrderHandler {
         }
         return null;
     }
+
+    public Payload updateOrderStatus(int orderId, String newStatus) {
+        if (orderHeaderDAO.updateOrderStatus(orderId, newStatus)) {
+            return new Payload("Order status updated successfully.", null, true);
+        }
+        return new Payload("Failed to update order status.", null, false);
+    }
+
+    public String getNextOrderStatus(String currentStatus) {
+        if (currentStatus.equals("Pending")) {
+            return "In Progress";
+        } else if (currentStatus.equals("In Progress")) {
+            return "Delivered";
+        }
+        return currentStatus; // If already Delivered or unknown, return current status
+    }
 }

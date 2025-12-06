@@ -12,7 +12,7 @@ import view.OrderHistoryView;
 import view.ProductsView;
 import view.AddProductView; // Import AddProductView
 import view.AssignOrderView; // Import AssignOrderView
-import view.EditDeliveryStatusView; // Import EditDeliveryStatusView
+import view.DeliveriesView;
 import view.EditProductView;
 import view.ProfileView; // Import ProfileView
 import view.RegisterView;
@@ -39,7 +39,7 @@ public class Main extends Application {
 	// Admin/Courier specific views
 	private AddProductView addProductView;
 	private AssignOrderView assignOrderView;
-	private EditDeliveryStatusView editDeliveryStatusView;
+	private DeliveriesView deliveriesView;
 	private EditProductView editProductView;
 	private ViewAllCouriersView viewAllCouriersView;
 	private ViewAllOrdersView viewAllOrdersView;
@@ -67,7 +67,6 @@ public class Main extends Application {
 
 		// Initialize Admin/Courier specific views
 		addProductView = new AddProductView();
-		editDeliveryStatusView = new EditDeliveryStatusView();
 		viewAllCouriersView = new ViewAllCouriersView();
 		viewAllOrdersView = new ViewAllOrdersView();
 
@@ -126,18 +125,18 @@ public class Main extends Application {
 				mainLayout.setCenter(addProductView);
 				break;
 			case "AssignOrder": // New Admin view
-				System.out.println("Params length: " + params.length);
 				if (params.length > 0) {
 					int orderId = Integer.parseInt(params[0]);
 					assignOrderView = new AssignOrderView(orderId);
+					mainLayout.setCenter(assignOrderView);
 				} else {
-					assignOrderView = new AssignOrderView(-1);
+					System.err.println("Order ID not provided for AssignOrderView.");
+					mainLayout.setCenter(viewAllOrdersView); // Fallback to ViewAllOrdersView
 				}
-				mainLayout.setCenter(assignOrderView);
 				break;
-			case "EditDeliveryStatus": // New Courier view
-				editDeliveryStatusView = new EditDeliveryStatusView();
-				mainLayout.setCenter(editDeliveryStatusView);
+			case "Deliveries":
+				deliveriesView = new DeliveriesView();
+				mainLayout.setCenter(deliveriesView);
 				break;
 			case "EditProduct":
 				if (params.length > 0) {

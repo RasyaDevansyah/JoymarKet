@@ -100,4 +100,16 @@ public class OrderHeaderDAO {
         }
         return orderHeaders;
     }
+
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        String sql = "UPDATE order_headers SET status = ? WHERE id_order = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, newStatus);
+            pstmt.setInt(2, orderId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

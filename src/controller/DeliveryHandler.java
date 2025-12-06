@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import model.Delivery;
 import model.DeliveryDAO;
 import model.Payload;
@@ -28,5 +31,13 @@ public class DeliveryHandler {
             }
             return new Payload("Failed to assign courier.", null, false);
         }
+    }
+
+    public Payload getDeliveriesByCourierId(String courierId) {
+        List<Delivery> deliveries = deliveryDAO.getDeliveriesByCourierId(courierId);
+        if (deliveries != null) {
+            return new Payload("Deliveries retrieved successfully.", deliveries, true);
+        }
+        return new Payload("Failed to retrieve deliveries.", new ArrayList<>(), false);
     }
 }

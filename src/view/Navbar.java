@@ -22,7 +22,7 @@ public class Navbar extends HBox {
     private Button viewAllOrdersButton;
 
     // Courier specific buttons
-    private Button editDeliveryStatusButton;
+    private Button deliveriesButton;
 
     public Navbar() {
         this.setStyle("-fx-background-color: #d5d5d5ff; -fx-padding: 5 30 5 30;");
@@ -102,11 +102,10 @@ public class Navbar extends HBox {
                         logoutButton);
                 break;
             case "COURIER":
-                editDeliveryStatusButton = new Button("Edit Delivery Status");
-                // Set action for courier button (will need to implement this view later)
-                editDeliveryStatusButton.setOnAction(e -> System.out.println("Edit Delivery Status clicked")); // Placeholder
+                deliveriesButton = new Button("Deliveries");
+                deliveriesButton.setOnAction(e -> changePageTo("Deliveries"));
 
-                getChildren().addAll(editDeliveryStatusButton, spacer, usernameButton, logoutButton);
+                getChildren().addAll(deliveriesButton, spacer, usernameButton, logoutButton);
                 break;
             default:
                 // Fallback for unknown roles, perhaps just the username button
