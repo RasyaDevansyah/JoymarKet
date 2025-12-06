@@ -70,10 +70,6 @@ public class Navbar extends HBox {
 
         setSpacing(10);
 
-        Button logoutButton = new Button("Logout");
-        logoutButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;"); // Red button for logout
-        logoutButton.setOnAction(e -> Main.getInstance().handleLogout()); // Call handleLogout in Main
-
         // Add buttons based on user role
         switch (currentUser.getRole()) {
             case "CUSTOMER":
@@ -88,7 +84,7 @@ public class Navbar extends HBox {
                 orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
 
                 getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton,
-                        usernameButton, logoutButton);
+                        usernameButton);
                 break;
             case "ADMIN":
                 productsButton = new Button("Products");
@@ -98,18 +94,18 @@ public class Navbar extends HBox {
                 productsButton.setOnAction(e -> changePageTo("Products"));
                 viewAllCouriersButton.setOnAction(e -> changePageTo("ViewAllCouriers"));
                 viewAllOrdersButton.setOnAction(e -> changePageTo("ViewAllOrders"));
-                getChildren().addAll(productsButton, viewAllCouriersButton, viewAllOrdersButton, spacer, usernameButton,
-                        logoutButton);
+                getChildren().addAll(productsButton, viewAllCouriersButton, viewAllOrdersButton, spacer,
+                        usernameButton);
                 break;
             case "COURIER":
                 deliveriesButton = new Button("Deliveries");
                 deliveriesButton.setOnAction(e -> changePageTo("Deliveries"));
 
-                getChildren().addAll(deliveriesButton, spacer, usernameButton, logoutButton);
+                getChildren().addAll(deliveriesButton, spacer, usernameButton);
                 break;
             default:
                 // Fallback for unknown roles, perhaps just the username button
-                getChildren().addAll(spacer, usernameButton, logoutButton);
+                getChildren().addAll(spacer, usernameButton);
                 break;
         }
     }

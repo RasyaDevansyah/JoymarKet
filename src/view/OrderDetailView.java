@@ -21,6 +21,8 @@ import model.OrderHeader;
 import model.Payload;
 import model.Product;
 import model.ProductDAO;
+import model.Session;
+import model.User;
 
 public class OrderDetailView extends BorderPane {
 
@@ -60,8 +62,28 @@ public class OrderDetailView extends BorderPane {
         detailTable = new TableView<>();
         initializeTableColumns();
 
-        backButton = new Button("Back to Order History");
-        backButton.setOnAction(e -> Main.getInstance().changePageTo("OrderHistory"));
+        backButton = new Button("Back"); // Changed button text to be more generic
+        backButton.setOnAction(e -> {
+            User currentUser = Session.getInstance().getCurrentUser();
+            if (currentUser != null) {
+                switch (currentUser.getRole()) {
+                    case "CUSTOMER":
+                        Main.getInstance().changePageTo("OrderHistory");
+                        break;
+                    case "ADMIN":
+                        Main.getInstance().changePageTo("ViewAllOrders");
+                        break;
+                    case "COURIER":
+                        Main.getInstance().changePageTo("Deliveries");
+                        break;
+                    default:
+                        Main.getInstance().changePageTo("Products"); // Fallback
+                        break;
+                }
+            } else {
+                Main.getInstance().changePageTo("Products"); // Fallback if no user is logged in
+            }
+        });
 
         VBox infoBox = new VBox(5);
         infoBox.setPadding(new Insets(10));
@@ -97,7 +119,8 @@ public class OrderDetailView extends BorderPane {
                 super.updateItem(price, empty);
                 if (empty || price == null) {
                     setText(null);
-                } else {
+                }
+                else {
                     setText(String.format("Rp %.2f", price));
                 }
             }
@@ -137,7 +160,6 @@ public class OrderDetailView extends BorderPane {
 
             Payload detailsPayload = orderHandler.getOrderDetailsByOrderId(orderId);
             if (detailsPayload.isSuccess() && detailsPayload.getData() instanceof List) {
-                @SuppressWarnings("unchecked")
                 List<OrderDetail> details = (List<OrderDetail>) detailsPayload.getData();
                 detailTable.getItems().addAll(details);
             } else {

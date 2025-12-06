@@ -87,7 +87,8 @@ public class ProductsView extends BorderPane {
                             showAlert(AlertType.INFORMATION, "Success", "Product added to cart!");
                             Main.getInstance().changePageTo("Cart");
                         } else {
-                            showAlert(AlertType.ERROR, "Error", "Failed to add product to cart: " + payload.getMessage());
+                            showAlert(AlertType.ERROR, "Error",
+                                    "Failed to add product to cart: " + payload.getMessage());
                         }
                     } else {
                         showAlert(AlertType.WARNING, "Login Required", "Please log in to add products to cart.");
@@ -109,7 +110,7 @@ public class ProductsView extends BorderPane {
                     User currentUser = Session.getInstance().getCurrentUser();
                     if (currentUser != null && currentUser instanceof model.Admin) {
                         setGraphic(editButton);
-                    } else {
+                    } else if (currentUser != null && currentUser instanceof model.Customer) {
                         setGraphic(addButton);
                     }
                 }
