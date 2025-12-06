@@ -40,12 +40,12 @@ public class TopupView extends BorderPane {
 
         amountField = new TextField();
         amountField.setPromptText("Enter top-up amount");
-        // Restrict input to numbers only
-        amountField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*(\\.\\d*)?")) {
-                amountField.setText(oldValue);
-            }
-        });
+        // Removed client-side numeric restriction as validation is now in UserHandler
+        // amountField.textProperty().addListener((observable, oldValue, newValue) -> {
+        //     if (!newValue.matches("\\d*(\\.\\d*)?")) {
+        //         amountField.setText(oldValue);
+        //     }
+        // });
 
         topupButton = new Button("Top Up");
         topupButton.setOnAction(e -> handleTopUp());
@@ -76,7 +76,9 @@ public class TopupView extends BorderPane {
             if (currentUser.getRole().equals("CUSTOMER")) {
                 Customer customer = (Customer) currentUser;
                 currentBalanceLabel.setText(String.format("Current Balance: Rp %.2f", customer.getBalance()));
-            } else {
+            }
+
+            else {
                 currentBalanceLabel.setText("Current Balance: N/A (Login as Customer)");
                 amountField.setDisable(true);
                 topupButton.setDisable(true);
@@ -92,25 +94,17 @@ public class TopupView extends BorderPane {
         }
 
         String amountText = amountField.getText();
-        if (amountText.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Please enter a top-up amount.");
-            return;
-        }
 
-        try {
-            double amount = Double.parseDouble(amountText);
-            Payload result = userHandler.TopUpBalance(currentUser.getIdUser(), amount);
+        // Call TopUpBalance with amountText (string)
+        Payload result = userHandler.TopUpBalance(currentUser.getIdUser(), amountText);
 
-            if (result.isSuccess()) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Top-up successful!");
-                loadBalanceData(); // Refresh balance display
-                Main.getInstance().refreshNavbar(); // Refresh Navbar to show updated balance (if applicable)
-                amountField.clear();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
-            }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Invalid amount. Please enter a valid number.");
+        if (result.isSuccess()) {
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Top-up successful!");
+            loadBalanceData(); // Refresh balance display
+            Main.getInstance().refreshNavbar(); // Refresh Navbar to show updated balance (if applicable)
+            amountField.clear();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
         }
     }
 

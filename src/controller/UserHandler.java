@@ -86,12 +86,27 @@ public class UserHandler {
         session.clearSession();
     }
 
-    public Payload TopUpBalance(String customerId, double amount) {
+    public Payload TopUpBalance(String customerId, String amountText) {
         if (customerId == null || customerId.trim().isEmpty()) {
             return new Payload("Customer ID cannot be empty.", null, false);
         }
-        if (amount <= 0) {
-            return new Payload("Top-up amount must be positive.", null, false);
+
+        // Validation: Must be filled.
+        if (amountText == null || amountText.trim().isEmpty()) {
+            return new Payload("Top-up amount must be filled.", null, false);
+        }
+
+        double amount;
+        try {
+            // Validation: Must be numeric.
+            amount = Double.parseDouble(amountText);
+        } catch (NumberFormatException e) {
+            return new Payload("Top-up amount must be numeric.", null, false);
+        }
+
+        // Validation: Minimum 10,000.
+        if (amount < 10000) {
+            return new Payload("Minimum top-up amount is Rp 10,000.", null, false);
         }
 
         boolean success = customerDAO.updateBalance(customerId, amount);

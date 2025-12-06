@@ -86,12 +86,6 @@ public class CartView extends BorderPane {
             double finalTotal = total;
 
             if (appliedPromo != null) {
-                // Check if the promo has already been used by the current user
-                if (promoHandler.isPromoUsedByUser(appliedPromo.getIdPromo(), currentUser.getIdUser())) {
-                    showAlert(AlertType.ERROR, "Error", "Promo Already Used", "This promo code has already been used.");
-                    clearPromo();
-                    return;
-                }
                 finalTotal = promoHandler.applyPromoDiscount(appliedPromo, total);
                 promoIdToUse = appliedPromo.getIdPromo();
             }

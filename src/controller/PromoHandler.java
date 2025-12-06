@@ -3,8 +3,6 @@ package controller;
 import model.Payload;
 import model.Promo;
 import model.PromoDAO;
-import model.Session;
-import model.User;
 
 public class PromoHandler {
 
@@ -24,30 +22,7 @@ public class PromoHandler {
             return new Payload("Invalid promo code.", null, false);
         }
 
-        // Additional checks: expiry date, minimum purchase, etc.
-        // For now, only checking for user usage.
-        // Assuming these checks are handled within the PromoDAO or Promo model if they exist.
-
-        if (promoDAO.isPromoUsedByUser(userId, promo.getIdPromo())) {
-            return new Payload("This promo code has already been used by you.", null, false);
-        }
-
-        // Check if promo is expired (example, assuming Promo has an expiryDate field)
-        // if (promo.getExpiryDate().before(new Date())) {
-        //     return new Payload("This promo code has expired.", null, false);
-        // }
-
-        // Check for minimum purchase amount (example, assuming Promo has a minPurchaseAmount field)
-        // if (currentTotal < promo.getMinPurchaseAmount()) {
-        //     return new Payload("Minimum purchase of Rp " + promo.getMinPurchaseAmount() + " required.", null, false);
-        // }
-
-
         return new Payload("Promo code is valid.", promo, true);
-    }
-
-    public boolean isPromoUsedByUser(String promoId, String userId) {
-        return promoDAO.isPromoUsedByUser(userId, promoId);
     }
 
     public void markPromoAsUsed(String promoId, String userId) {

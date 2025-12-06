@@ -31,21 +31,6 @@ public class PromoDAO {
         return null;
     }
 
-    public boolean isPromoUsedByUser(String userId, String promoId) {
-        String sql = "SELECT COUNT(*) FROM user_promos WHERE id_user = ? AND id_promo = ?";
-        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
-            pstmt.setInt(1, Integer.parseInt(userId));
-            pstmt.setInt(2, Integer.parseInt(promoId));
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public boolean markPromoAsUsed(String userId, String promoId) {
         String sql = "INSERT INTO user_promos (id_user, id_promo, used_at) VALUES (?, ?, ?)";
