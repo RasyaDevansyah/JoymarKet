@@ -5,6 +5,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import main.Main;
+import model.Session;
+import model.User;
 
 public class Navbar extends HBox {
 
@@ -14,6 +16,13 @@ public class Navbar extends HBox {
     private Button orderHistoryButton;
     private Button registerButton;
     private Button usernameButton;
+
+    // Admin specific buttons
+    private Button addProductButton;
+    private Button assignOrderButton;
+
+    // Courier specific buttons
+    private Button editDeliveryStatusButton;
 
     public Navbar() {
         this.setStyle("-fx-background-color: #d5d5d5ff; -fx-padding: 5 30 5 30;");
@@ -46,24 +55,56 @@ public class Navbar extends HBox {
     public void setupLoggedInView(String username) {
         getChildren().clear();
 
-        // 1. Initialize the buttons specifically for this view
-        productsButton = new Button("Products");
-        topupButton = new Button("Top-up");
-        cartButton = new Button("Cart");
-        orderHistoryButton = new Button("Order History");
-        usernameButton = new Button("Welcome, " + username);
+        User currentUser = Session.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            setupLoggedOutView();
+            return;
+        }
 
-        // 2. Set the actions immediately after creating them
-        productsButton.setOnAction(e -> changePageTo("Products"));
-        topupButton.setOnAction(e -> changePageTo("Topup"));
-        cartButton.setOnAction(e -> changePageTo("Cart"));
-        orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
+        // Common button for all logged-in users
+        usernameButton = new Button("Welcome, " + username);
         usernameButton.setOnAction(e -> changePageTo("Profile"));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         setSpacing(10);
-        getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton);
+
+        // Add buttons based on user role
+        switch (currentUser.getRole()) {
+            case "CUSTOMER":
+                productsButton = new Button("Products");
+                topupButton = new Button("Top-up");
+                cartButton = new Button("Cart");
+                orderHistoryButton = new Button("Order History");
+
+                productsButton.setOnAction(e -> changePageTo("Products"));
+                topupButton.setOnAction(e -> changePageTo("Topup"));
+                cartButton.setOnAction(e -> changePageTo("Cart"));
+                orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
+                
+                getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton);
+                break;
+            case "ADMIN":
+                addProductButton = new Button("Add Product");
+                assignOrderButton = new Button("Assign Order");
+                // Set actions for admin buttons (will need to implement these views later)
+                addProductButton.setOnAction(e -> System.out.println("Add Product clicked")); // Placeholder
+                assignOrderButton.setOnAction(e -> System.out.println("Assign Order clicked")); // Placeholder
+                
+                getChildren().addAll(addProductButton, assignOrderButton, spacer, usernameButton);
+                break;
+            case "COURIER":
+                editDeliveryStatusButton = new Button("Edit Delivery Status");
+                // Set action for courier button (will need to implement this view later)
+                editDeliveryStatusButton.setOnAction(e -> System.out.println("Edit Delivery Status clicked")); // Placeholder
+                
+                getChildren().addAll(editDeliveryStatusButton, spacer, usernameButton);
+                break;
+            default:
+                // Fallback for unknown roles, perhaps just the username button
+                getChildren().addAll(spacer, usernameButton);
+                break;
+        }
     }
 }

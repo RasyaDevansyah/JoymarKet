@@ -9,6 +9,9 @@ import view.LoginView;
 import view.Navbar;
 import view.OrderHistoryView;
 import view.ProductsView;
+import view.AddProductView; // Import AddProductView
+import view.AssignOrderView; // Import AssignOrderView
+import view.EditDeliveryStatusView; // Import EditDeliveryStatusView
 import view.ProfileView; // Import ProfileView
 import view.RegisterView;
 import view.TopupView;
@@ -27,6 +30,11 @@ public class Main extends Application {
 	private LoginView loginView;
 	private RegisterView registerView;
 	private ProfileView profileView; // Add ProfileView
+
+	// Admin/Courier specific views
+	private AddProductView addProductView;
+	private AssignOrderView assignOrderView;
+	private EditDeliveryStatusView editDeliveryStatusView;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -48,6 +56,11 @@ public class Main extends Application {
 		loginView = new LoginView();
 		registerView = new RegisterView();
 		profileView = new ProfileView(); // Initialize ProfileView
+
+		// Initialize Admin/Courier specific views
+		addProductView = new AddProductView();
+		assignOrderView = new AssignOrderView();
+		editDeliveryStatusView = new EditDeliveryStatusView();
 
 		mainLayout = new BorderPane();
 		mainLayout.setCenter(productsView); // Default view
@@ -86,6 +99,18 @@ public class Main extends Application {
 			case "Profile":
 				profileView = new ProfileView(); // Refresh profile view
 				mainLayout.setCenter(profileView);
+				break;
+			case "AddProduct": // New Admin view
+				addProductView = new AddProductView();
+				mainLayout.setCenter(addProductView);
+				break;
+			case "AssignOrder": // New Admin view
+				assignOrderView = new AssignOrderView();
+				mainLayout.setCenter(assignOrderView);
+				break;
+			case "EditDeliveryStatus": // New Courier view
+				editDeliveryStatusView = new EditDeliveryStatusView();
+				mainLayout.setCenter(editDeliveryStatusView);
 				break;
 			default:
 				mainLayout.setCenter(productsView); // Fallback to products view
