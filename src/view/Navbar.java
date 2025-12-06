@@ -20,7 +20,6 @@ public class Navbar extends HBox {
     // Admin specific buttons
     private Button viewAllCouriersButton;
     private Button viewAllOrdersButton;
-    private Button assignOrderButton;
 
     // Courier specific buttons
     private Button editDeliveryStatusButton;
@@ -95,15 +94,12 @@ public class Navbar extends HBox {
                 productsButton = new Button("Products");
                 viewAllCouriersButton = new Button("Couriers");
                 viewAllOrdersButton = new Button("All Orders");
-                assignOrderButton = new Button("Assign Order");
                 // Set actions for admin buttons (will need to implement these views later)
                 productsButton.setOnAction(e -> changePageTo("Products"));
                 viewAllCouriersButton.setOnAction(e -> changePageTo("ViewAllCouriers"));
                 viewAllOrdersButton.setOnAction(e -> changePageTo("ViewAllOrders"));
-                assignOrderButton.setOnAction(e -> changePageTo("AssignOrder"));
-
-                getChildren().addAll(productsButton, viewAllCouriersButton, viewAllOrdersButton,
-                        assignOrderButton, spacer, usernameButton, logoutButton);
+                getChildren().addAll(productsButton, viewAllCouriersButton, viewAllOrdersButton, spacer, usernameButton,
+                        logoutButton);
                 break;
             case "COURIER":
                 editDeliveryStatusButton = new Button("Edit Delivery Status");

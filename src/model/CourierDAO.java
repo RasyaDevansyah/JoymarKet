@@ -36,4 +36,30 @@ public class CourierDAO {
         }
         return couriers;
     }
+
+    public Courier getCourierById(String courierId) {
+        String sql = "SELECT u.id_user, u.full_name, u.email, u.password, u.phone, u.address, c.vehicle_type, c.vehicle_plate " +
+                     "FROM users u JOIN couriers c ON u.id_user = c.id_user " +
+                     "WHERE u.id_user = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, courierId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Courier(
+                        String.valueOf(rs.getInt("id_user")),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("vehicle_type"),
+                        rs.getString("vehicle_plate")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

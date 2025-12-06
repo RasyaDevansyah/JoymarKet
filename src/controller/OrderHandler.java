@@ -7,6 +7,8 @@ import model.CartItem;
 import model.CartItemDAO;
 import model.Customer;
 import model.CustomerDAO;
+import model.Delivery;
+import model.DeliveryDAO;
 import model.OrderDetail;
 import model.OrderDetailDAO;
 import model.OrderHeader;
@@ -21,6 +23,7 @@ public class OrderHandler {
     OrderHeaderDAO orderHeaderDAO = new OrderHeaderDAO();
     OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
     ProductDAO productDAO = new ProductDAO();
+    DeliveryDAO deliveryDAO = new DeliveryDAO(); // Add DeliveryDAO
 
     public Payload processCheckout(double totalAmount, User user) {
         Payload validationPayload = validateCheckout(totalAmount, user);
@@ -121,5 +124,13 @@ public class OrderHandler {
             return new Payload("All order headers retrieved successfully.", orderHeaders, true);
         }
         return new Payload("Failed to retrieve all order headers.", null, false);
+    }
+
+    public String getCourierIdForOrder(int orderId) {
+        Delivery delivery = deliveryDAO.getDeliveryByOrderId(orderId);
+        if (delivery != null) {
+            return delivery.getIdCourier();
+        }
+        return null;
     }
 }

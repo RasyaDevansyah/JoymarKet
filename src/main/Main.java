@@ -67,7 +67,6 @@ public class Main extends Application {
 
 		// Initialize Admin/Courier specific views
 		addProductView = new AddProductView();
-		assignOrderView = new AssignOrderView();
 		editDeliveryStatusView = new EditDeliveryStatusView();
 		viewAllCouriersView = new ViewAllCouriersView();
 		viewAllOrdersView = new ViewAllOrdersView();
@@ -81,7 +80,7 @@ public class Main extends Application {
 
 	}
 
-    public void changePageTo(String pageName, String... params) {
+	public void changePageTo(String pageName, String... params) {
 		refreshNavbar();
 		switch (pageName) {
 			case "Products":
@@ -100,16 +99,16 @@ public class Main extends Application {
 				orderHistoryView = new OrderHistoryView(); // Refresh order history view
 				mainLayout.setCenter(orderHistoryView);
 				break;
-            case "OrderDetail":
-                if (params.length > 0) {
-                    int orderId = Integer.parseInt(params[0]);
-                    orderDetailView = new OrderDetailView(orderId);
-                    mainLayout.setCenter(orderDetailView);
-                } else {
-                    System.err.println("Order ID not provided for OrderDetailView.");
-                    mainLayout.setCenter(orderHistoryView);
-                }
-                break;
+			case "OrderDetail":
+				if (params.length > 0) {
+					int orderId = Integer.parseInt(params[0]);
+					orderDetailView = new OrderDetailView(orderId);
+					mainLayout.setCenter(orderDetailView);
+				} else {
+					System.err.println("Order ID not provided for OrderDetailView.");
+					mainLayout.setCenter(orderHistoryView);
+				}
+				break;
 			case "Register":
 				registerView = new RegisterView(); // Refresh register view
 				mainLayout.setCenter(registerView);
@@ -127,7 +126,13 @@ public class Main extends Application {
 				mainLayout.setCenter(addProductView);
 				break;
 			case "AssignOrder": // New Admin view
-				assignOrderView = new AssignOrderView();
+				System.out.println("Params length: " + params.length);
+				if (params.length > 0) {
+					int orderId = Integer.parseInt(params[0]);
+					assignOrderView = new AssignOrderView(orderId);
+				} else {
+					assignOrderView = new AssignOrderView(-1);
+				}
 				mainLayout.setCenter(assignOrderView);
 				break;
 			case "EditDeliveryStatus": // New Courier view

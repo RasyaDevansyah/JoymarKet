@@ -13,9 +13,14 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.Main;
+import model.Courier;
+import model.CourierDAO;
+import model.Customer;
+import model.CustomerDAO;
 import model.OrderHeader;
 import model.Payload;
 
@@ -23,9 +28,13 @@ public class ViewAllOrdersView extends BorderPane {
 
     private TableView<OrderHeader> orderTable;
     private OrderHandler orderHandler;
+    private CustomerDAO customerDAO;
+    private CourierDAO courierDAO;
 
     public ViewAllOrdersView() {
         orderHandler = new OrderHandler();
+        customerDAO = new CustomerDAO();
+        courierDAO = new CourierDAO();
 
         Label title = new Label("All Orders");
         title.setFont(new Font("Arial", 24));
@@ -47,8 +56,21 @@ public class ViewAllOrdersView extends BorderPane {
         TableColumn<OrderHeader, Integer> idCol = new TableColumn<>("Order ID");
         idCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getIdOrder()));
 
-        TableColumn<OrderHeader, String> customerIdCol = new TableColumn<>("Customer ID");
-        customerIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdCustomer()));
+        TableColumn<OrderHeader, String> customerNameCol = new TableColumn<>("Customer Name");
+        customerNameCol.setCellValueFactory(cellData -> {
+            Customer customer = customerDAO.getCustomerById(cellData.getValue().getIdCustomer());
+            return new SimpleStringProperty(customer != null ? customer.getFullName() : "None");
+        });
+
+        TableColumn<OrderHeader, String> courierNameCol = new TableColumn<>("Courier Name");
+        courierNameCol.setCellValueFactory(cellData -> {
+            String courierId = orderHandler.getCourierIdForOrder(cellData.getValue().getIdOrder());
+            if (courierId != null) {
+                Courier courier = courierDAO.getCourierById(courierId);
+                return new SimpleStringProperty(courier != null ? courier.getFullName() : "None");
+            }
+            return new SimpleStringProperty("None");
+        });
 
         TableColumn<OrderHeader, String> promoIdCol = new TableColumn<>("Promo ID");
         promoIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdPromo()));
@@ -73,15 +95,24 @@ public class ViewAllOrdersView extends BorderPane {
             }
         });
 
-        TableColumn<OrderHeader, Void> detailCol = new TableColumn<>("Details");
-        detailCol.setCellFactory(param -> new TableCell<OrderHeader, Void>() {
+        TableColumn<OrderHeader, Void> actionCol = new TableColumn<>("Action");
+        actionCol.setCellFactory(param -> new TableCell<OrderHeader, Void>() {
             private final Button detailButton = new Button("View Details");
+            private final Button assignButton = new Button("Assign Order");
+            private final HBox pane = new HBox(5, detailButton, assignButton);
 
             {
                 detailButton.setOnAction(event -> {
                     OrderHeader order = getTableView().getItems().get(getIndex());
                     if (order != null) {
                         Main.getInstance().changePageTo("OrderDetail", String.valueOf(order.getIdOrder()));
+                    }
+                });
+
+                assignButton.setOnAction(event -> {
+                    OrderHeader order = getTableView().getItems().get(getIndex());
+                    if (order != null) {
+                        Main.getInstance().changePageTo("AssignOrder", String.valueOf(order.getIdOrder()));
                     }
                 });
             }
@@ -92,17 +123,16 @@ public class ViewAllOrdersView extends BorderPane {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(detailButton);
+                    setGraphic(pane);
                 }
             }
         });
 
-        orderTable.getColumns().addAll(idCol, customerIdCol, promoIdCol, statusCol, orderDateCol, totalAmountCol, detailCol);
+        orderTable.getColumns().addAll(idCol, customerNameCol, courierNameCol, promoIdCol, statusCol, orderDateCol, totalAmountCol, actionCol);
     }
 
     private void loadOrderData() {
         orderTable.getItems().clear();
-        // Call getAllOrderHeaders for admin view
         Payload payload = orderHandler.getAllOrderHeaders();
         if (payload.isSuccess() && payload.getData() instanceof List) {
             @SuppressWarnings("unchecked")
