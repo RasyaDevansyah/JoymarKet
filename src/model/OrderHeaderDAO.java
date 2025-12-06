@@ -78,4 +78,26 @@ public class OrderHeaderDAO {
         }
         return null;
     }
+
+    public List<OrderHeader> getAllOrderHeaders() {
+        List<OrderHeader> orderHeaders = new java.util.ArrayList<>();
+        String sql = "SELECT id_order, id_customer, id_promo, status, ordered_at, total_amount FROM order_headers ORDER BY ordered_at DESC";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                OrderHeader orderHeader = new OrderHeader(
+                    rs.getString("id_customer"),
+                    rs.getString("id_promo"),
+                    rs.getString("status"),
+                    rs.getDate("ordered_at"),
+                    rs.getDouble("total_amount")
+                );
+                orderHeader.setIdOrder(rs.getInt("id_order"));
+                orderHeaders.add(orderHeader);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderHeaders;
+    }
 }

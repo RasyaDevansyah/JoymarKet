@@ -98,9 +98,9 @@ public class Navbar extends HBox {
                 assignOrderButton = new Button("Assign Order");
                 // Set actions for admin buttons (will need to implement these views later)
                 productsButton.setOnAction(e -> changePageTo("Products"));
-                viewAllCouriersButton.setOnAction(e -> System.out.println("View All Couriers clicked")); // Placeholder
-                viewAllOrdersButton.setOnAction(e -> System.out.println("View all orders clicked"));
-                assignOrderButton.setOnAction(e -> System.out.println("Assign order clicked"));
+                viewAllCouriersButton.setOnAction(e -> changePageTo("ViewAllCouriers"));
+                viewAllOrdersButton.setOnAction(e -> changePageTo("ViewAllOrders"));
+                assignOrderButton.setOnAction(e -> changePageTo("AssignOrder"));
 
                 getChildren().addAll(productsButton, viewAllCouriersButton, viewAllOrdersButton,
                         assignOrderButton, spacer, usernameButton, logoutButton);

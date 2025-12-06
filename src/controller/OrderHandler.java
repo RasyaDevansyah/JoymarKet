@@ -114,4 +114,12 @@ public class OrderHandler {
         }
         return new Payload("Failed to retrieve order details.", null, false);
     }
+
+    public Payload getAllOrderHeaders() {
+        List<OrderHeader> orderHeaders = orderHeaderDAO.getAllOrderHeaders();
+        if (orderHeaders != null) {
+            return new Payload("All order headers retrieved successfully.", orderHeaders, true);
+        }
+        return new Payload("Failed to retrieve all order headers.", null, false);
+    }
 }
