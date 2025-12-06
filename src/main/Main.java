@@ -134,4 +134,10 @@ public class Main extends Application {
 		}
 	}
 
+	public void handleLogout() {
+		session.clearSession();
+		changePageTo("Login");
+		refreshNavbar(); // Refresh navbar to show logged-out view
+	}
+
 }

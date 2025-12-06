@@ -70,6 +70,10 @@ public class Navbar extends HBox {
 
         setSpacing(10);
 
+        Button logoutButton = new Button("Logout");
+        logoutButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;"); // Red button for logout
+        logoutButton.setOnAction(e -> Main.getInstance().handleLogout()); // Call handleLogout in Main
+
         // Add buttons based on user role
         switch (currentUser.getRole()) {
             case "CUSTOMER":
@@ -83,7 +87,7 @@ public class Navbar extends HBox {
                 cartButton.setOnAction(e -> changePageTo("Cart"));
                 orderHistoryButton.setOnAction(e -> changePageTo("OrderHistory"));
                 
-                getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton);
+                getChildren().addAll(productsButton, spacer, topupButton, cartButton, orderHistoryButton, usernameButton, logoutButton);
                 break;
             case "ADMIN":
                 addProductButton = new Button("Add Product");
@@ -92,18 +96,18 @@ public class Navbar extends HBox {
                 addProductButton.setOnAction(e -> System.out.println("Add Product clicked")); // Placeholder
                 assignOrderButton.setOnAction(e -> System.out.println("Assign Order clicked")); // Placeholder
                 
-                getChildren().addAll(addProductButton, assignOrderButton, spacer, usernameButton);
+                getChildren().addAll(addProductButton, assignOrderButton, spacer, usernameButton, logoutButton);
                 break;
             case "COURIER":
                 editDeliveryStatusButton = new Button("Edit Delivery Status");
                 // Set action for courier button (will need to implement this view later)
                 editDeliveryStatusButton.setOnAction(e -> System.out.println("Edit Delivery Status clicked")); // Placeholder
                 
-                getChildren().addAll(editDeliveryStatusButton, spacer, usernameButton);
+                getChildren().addAll(editDeliveryStatusButton, spacer, usernameButton, logoutButton);
                 break;
             default:
                 // Fallback for unknown roles, perhaps just the username button
-                getChildren().addAll(spacer, usernameButton);
+                getChildren().addAll(spacer, usernameButton, logoutButton);
                 break;
         }
     }

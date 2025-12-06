@@ -23,6 +23,7 @@ public class ProfileView extends BorderPane {
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField newPasswordField, confirmPasswordField;
     private Button saveButton;
+    private Button logoutButton;
     private Label titleLabel;
 
     public ProfileView() {
@@ -44,6 +45,10 @@ public class ProfileView extends BorderPane {
 
         saveButton = new Button("Save Changes");
         saveButton.setOnAction(e -> handleSaveChanges());
+
+        logoutButton = new Button("Logout");
+        logoutButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;"); // Red button for logout
+        logoutButton.setOnAction(e -> handleLogout());
     }
 
     private void setupLayout() {
@@ -78,7 +83,7 @@ public class ProfileView extends BorderPane {
         VBox contentBox = new VBox(20);
         contentBox.setAlignment(Pos.TOP_CENTER);
         contentBox.setPadding(new Insets(20));
-        contentBox.getChildren().addAll(titleLabel, formGrid, passwordSection, saveButton);
+        contentBox.getChildren().addAll(titleLabel, formGrid, passwordSection, saveButton, logoutButton);
 
         setCenter(contentBox);
     }
@@ -130,5 +135,11 @@ public class ProfileView extends BorderPane {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void handleLogout() {
+        userHandler.LogoutCustomer(); // Clear the session
+        Main.getInstance().changePageTo("Login"); // Redirect to login page
+        showAlert(Alert.AlertType.INFORMATION, "Logout", "You have been successfully logged out.");
     }
 }
