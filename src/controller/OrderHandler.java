@@ -12,12 +12,15 @@ import model.OrderDetailDAO;
 import model.OrderHeader;
 import model.OrderHeaderDAO;
 import model.Payload;
+import model.Product;
+import model.ProductDAO;
 import model.User;
 
 public class OrderHandler {
 
     OrderHeaderDAO orderHeaderDAO = new OrderHeaderDAO();
     OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+    ProductDAO productDAO = new ProductDAO();
 
     public Payload processCheckout(double totalAmount, User user) {
         Payload validationPayload = validateCheckout(totalAmount, user);
@@ -34,17 +37,26 @@ public class OrderHandler {
         customer.setBalance(newBalance);
         customerDAO.updateBalance(customer.getIdUser(), newBalance);
 
+        // Stock validation
+        List<CartItem> cartItems = cartItemDAO.getAllCartItems(customer.getIdUser());
+        for (CartItem item : cartItems) {
+            Product product = productDAO.getProductById(item.getProduct().getIdProduct());
+            if (product.getStock() < item.getCount()) {
+                return new Payload("Insufficient stock for " + product.getName(), null, false);
+            }
+        }
+
         // Create OrderHeader
         Date orderDate = new Date(System.currentTimeMillis());
-        List<CartItem> cartItems = cartItemDAO.getAllCartItems(customer.getIdUser());
         OrderHeader orderHeader = new OrderHeader(customer.getIdUser(), null, "Pending", orderDate, totalAmount);
         int orderId = orderHeaderDAO.insert(orderHeader);
 
         if (orderId != -1) {
-            // Create OrderDetails
+            // Create OrderDetails and update stock
             for (CartItem item : cartItems) {
                 OrderDetail orderDetail = new OrderDetail(orderId, item.getProduct().getIdProduct(), item.getCount());
                 orderDetailDAO.insert(orderDetail);
+                productDAO.updateStock(item.getProduct().getIdProduct(), item.getCount());
             }
         }
 

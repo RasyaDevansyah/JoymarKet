@@ -52,4 +52,16 @@ public class ProductDAO {
         }
         return null;
     }
+
+    public boolean updateStock(String productId, int quantity) {
+        String sql = "UPDATE products SET stock = stock - ? WHERE id_product = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setInt(1, quantity);
+            pstmt.setString(2, productId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
