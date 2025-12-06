@@ -71,7 +71,7 @@ public class CartView extends BorderPane {
 
             if (checkoutPayload.isSuccess()) {
                 showAlert(AlertType.INFORMATION, "Success", "Checkout Successful", checkoutPayload.getMessage());
-                loadCartData(); // Refresh cart view
+                Main.getInstance().changePageTo("OrderHistory"); // Redirect to OrderHistoryView
             } else {
                 showAlert(AlertType.ERROR, "Error", "Checkout Failed", checkoutPayload.getMessage());
             }

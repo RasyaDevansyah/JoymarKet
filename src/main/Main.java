@@ -7,6 +7,7 @@ import model.Session; // Import Session
 import view.CartView;
 import view.LoginView;
 import view.Navbar;
+import view.OrderDetailView;
 import view.OrderHistoryView;
 import view.ProductsView;
 import view.AddProductView; // Import AddProductView
@@ -27,6 +28,7 @@ public class Main extends Application {
 	private TopupView topupView;
 	private CartView cartView;
 	private OrderHistoryView orderHistoryView;
+	private OrderDetailView orderDetailView; // Add OrderDetailView
 	private LoginView loginView;
 	private RegisterView registerView;
 	private ProfileView profileView; // Add ProfileView
@@ -71,7 +73,7 @@ public class Main extends Application {
 
 	}
 
-	public void changePageTo(String pageName) {
+    public void changePageTo(String pageName, String... params) {
 		refreshNavbar();
 		switch (pageName) {
 			case "Products":
@@ -87,8 +89,19 @@ public class Main extends Application {
 				mainLayout.setCenter(cartView);
 				break;
 			case "OrderHistory":
+				orderHistoryView = new OrderHistoryView(); // Refresh order history view
 				mainLayout.setCenter(orderHistoryView);
 				break;
+            case "OrderDetail":
+                if (params.length > 0) {
+                    int orderId = Integer.parseInt(params[0]);
+                    orderDetailView = new OrderDetailView(orderId);
+                    mainLayout.setCenter(orderDetailView);
+                } else {
+                    System.err.println("Order ID not provided for OrderDetailView.");
+                    mainLayout.setCenter(orderHistoryView);
+                }
+                break;
 			case "Register":
 				registerView = new RegisterView(); // Refresh register view
 				mainLayout.setCenter(registerView);

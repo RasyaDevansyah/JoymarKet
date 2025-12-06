@@ -90,4 +90,28 @@ public class OrderHandler {
 
 
     }
+
+    public Payload getOrderHeadersByCustomerId(String customerId) {
+        List<OrderHeader> orderHeaders = orderHeaderDAO.getOrderHeadersByCustomerId(customerId);
+        if (orderHeaders != null) {
+            return new Payload("Order headers retrieved successfully.", orderHeaders, true);
+        }
+        return new Payload("Failed to retrieve order headers.", null, false);
+    }
+
+    public Payload getOrderHeaderById(int orderId) {
+        OrderHeader orderHeader = orderHeaderDAO.getOrderHeaderById(orderId);
+        if (orderHeader != null) {
+            return new Payload("Order header retrieved successfully.", orderHeader, true);
+        }
+        return new Payload("Failed to retrieve order header.", null, false);
+    }
+
+    public Payload getOrderDetailsByOrderId(int orderId) {
+        List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(orderId);
+        if (orderDetails != null) {
+            return new Payload("Order details retrieved successfully.", orderDetails, true);
+        }
+        return new Payload("Failed to retrieve order details.", null, false);
+    }
 }
