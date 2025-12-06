@@ -25,7 +25,7 @@ public class OrderHandler {
     ProductDAO productDAO = new ProductDAO();
     DeliveryDAO deliveryDAO = new DeliveryDAO(); // Add DeliveryDAO
 
-    public Payload processCheckout(double totalAmount, User user) {
+    public Payload processCheckout(double totalAmount, User user, String promoId) {
         Payload validationPayload = validateCheckout(totalAmount, user);
         if (!validationPayload.isSuccess()) {
             return validationPayload;
@@ -51,7 +51,8 @@ public class OrderHandler {
 
         // Create OrderHeader
         Date orderDate = new Date(System.currentTimeMillis());
-        OrderHeader orderHeader = new OrderHeader(customer.getIdUser(), null, "Pending", orderDate, totalAmount);
+        // Pass promoId to OrderHeader constructor
+        OrderHeader orderHeader = new OrderHeader(customer.getIdUser(), promoId, "Pending", orderDate, totalAmount);
         int orderId = orderHeaderDAO.insert(orderHeader);
 
         if (orderId != -1) {

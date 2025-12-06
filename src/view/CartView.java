@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import controller.CartItemHandler;
 import controller.OrderHandler;
+import controller.PromoHandler;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,6 +21,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -27,8 +29,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.Main;
 import model.CartItem;
+import model.Customer;
+import model.CustomerDAO;
 import model.Payload;
 import model.Product;
+import model.Promo;
 import model.Session;
 import model.User;
 
@@ -37,13 +42,24 @@ public class CartView extends BorderPane {
     private TableView<CartItem> cartTable;
     private CartItemHandler cartItemHandler;
     private OrderHandler orderHandler;
+    private PromoHandler promoHandler; // New PromoHandler
+    private CustomerDAO customerDAO; // New CustomerDAO
     private Label totalLabel;
+    private Label balanceLabel; // New balance label
+    private TextField promoCodeField; // New promo code input
+    private Button applyPromoButton; // New apply promo button
+    private Label promoInfoLabel; // New label to display promo info
     private Button continueShoppingButton;
     private Button checkoutButton;
+
+    private String appliedPromoId = null; // To store applied promo ID
+    private double discountedTotal = 0.0; // To store discounted total
 
     public CartView() {
         cartItemHandler = new CartItemHandler();
         orderHandler = new OrderHandler();
+        promoHandler = new PromoHandler(); // Initialize PromoHandler
+        customerDAO = new CustomerDAO(); // Initialize CustomerDAO
 
         // Continue Shopping Button
         continueShoppingButton = new Button("Continue Shopping");
@@ -67,7 +83,8 @@ public class CartView extends BorderPane {
                 return;
             }
 
-            Payload checkoutPayload = orderHandler.processCheckout(total, currentUser);
+            // Pass appliedPromoId to processCheckout
+            Payload checkoutPayload = orderHandler.processCheckout(total, currentUser, appliedPromoId);
 
             if (checkoutPayload.isSuccess()) {
                 showAlert(AlertType.INFORMATION, "Success", "Checkout Successful", checkoutPayload.getMessage());
@@ -81,8 +98,20 @@ public class CartView extends BorderPane {
         title.setFont(new Font("Arial", 24));
         setAlignment(title, Pos.TOP_CENTER);
 
+        balanceLabel = new Label("Balance: Rp 0.00"); // Initialize balance label
+        balanceLabel.setFont(new Font("Arial", 18));
+
         totalLabel = new Label("Total: Rp 0.00");
         totalLabel.setFont(new Font("Arial", 18));
+
+        promoCodeField = new TextField();
+        promoCodeField.setPromptText("Enter promo code");
+        promoCodeField.setPrefWidth(150);
+        applyPromoButton = new Button("Apply Promo");
+        applyPromoButton.setOnAction(e -> handleApplyPromo());
+
+        promoInfoLabel = new Label(""); // To display promo status
+        promoInfoLabel.setFont(new Font("Arial", 12));
 
         cartTable = new TableView<>();
         initializeTableColumns();
@@ -110,11 +139,14 @@ public class CartView extends BorderPane {
         contentBox.setAlignment(Pos.TOP_CENTER);
         contentBox.setPadding(new Insets(20, 0, 0, 0));
 
+        HBox promoBox = new HBox(10, promoCodeField, applyPromoButton, promoInfoLabel);
+        promoBox.setAlignment(Pos.CENTER);
+
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.getChildren().addAll(continueShoppingButton, checkoutButton);
 
-        contentBox.getChildren().addAll(title, cartTable, totalLabel, buttonBox);
+        contentBox.getChildren().addAll(title, balanceLabel, cartTable, promoBox, totalLabel, buttonBox);
 
         setCenter(contentBox);
         updateTotalLabel(); // Initial total update
@@ -177,6 +209,7 @@ public class CartView extends BorderPane {
                             isUpdating = false;
                         }
                     }
+                    Platform.runLater(() -> updateTotalLabel()); // Update total immediately
                 });
             }
 
@@ -190,11 +223,12 @@ public class CartView extends BorderPane {
                     isUpdating = true;
                     CartItem item = getTableView().getItems().get(getIndex());
                     Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
-                    if (product != null && product.getStock() > 1) {
+                    if (product != null && product.getStock() > 0) { // Check for stock > 0
                         spinner.setValueFactory(
                                 new Spinner<Integer>(1, product.getStock(), quantity).getValueFactory());
                     } else {
-                        spinner.setValueFactory(new Spinner<Integer>(1, 99, quantity).getValueFactory());
+                        spinner.setValueFactory(new Spinner<Integer>(0, 0, 0).getValueFactory()); // Set to 0 if out of stock
+                        spinner.setDisable(true); // Disable spinner if out of stock
                     }
                     isUpdating = false;
 
@@ -245,6 +279,7 @@ public class CartView extends BorderPane {
                         deleteButton.fire();
                         event.consume();
                     }
+                    updateTotalLabel(); // Update total after delete action
                 });
 
                 deleteButton.setOnAction(event -> {
@@ -261,6 +296,7 @@ public class CartView extends BorderPane {
                                 System.err.println("Error removing cart item: " + payload.getMessage());
                             }
                             Platform.runLater(() -> loadCartData());
+                            Platform.runLater(() -> updateTotalLabel());
                         }
                     }
                 });
@@ -292,6 +328,15 @@ public class CartView extends BorderPane {
         cartTable.getItems().clear();
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
+            // Display customer balance
+            if (currentUser instanceof Customer) {
+                Customer customer = (Customer) currentUser;
+                Customer updatedCustomer = customerDAO.getCustomerById(customer.getIdUser());
+                if (updatedCustomer != null) {
+                    balanceLabel.setText(String.format("Balance: Rp %.2f", updatedCustomer.getBalance()));
+                }
+            }
+
             Payload payload = cartItemHandler.getCartItems();
             if (payload.isSuccess() && payload.getData() instanceof List) {
                 @SuppressWarnings("unchecked")
@@ -303,6 +348,7 @@ public class CartView extends BorderPane {
                 totalLabel.setText("Failed to load cart. " + payload.getMessage());
             }
         } else {
+            balanceLabel.setText("Balance: Login to view"); // Default text for guest
             totalLabel.setText("Please log in to view your cart.");
         }
     }
@@ -315,12 +361,28 @@ public class CartView extends BorderPane {
                 total += item.getProduct().getPrice() * item.getCount();
             }
         }
-        return total;
+        return discountedTotal > 0 ? discountedTotal : total; // Apply discount if available
     }
 
     public void updateTotalLabel() {
         double total = calculateTotal();
         totalLabel.setText(String.format("Total: Rp %.2f", total));
+    }
+
+    private void handleApplyPromo() {
+        String promoCode = promoCodeField.getText();
+        Payload payload = promoHandler.applyPromo(promoCode, calculateTotal());
+        if (payload.isSuccess()) {
+            discountedTotal = (double) payload.getData();
+            appliedPromoId = payload.getPromoId();
+            promoInfoLabel.setText("Promo applied! Discounted Total: Rp " + String.format("%.2f", discountedTotal));
+            updateTotalLabel();
+        } else {
+            discountedTotal = 0.0; // Reset discounted total
+            appliedPromoId = null; // Clear applied promo ID
+            promoInfoLabel.setText("Error: " + payload.getMessage());
+            updateTotalLabel();
+        }
     }
 
     private void showAlert(AlertType alertType, String title, String headerText, String contentText) {
