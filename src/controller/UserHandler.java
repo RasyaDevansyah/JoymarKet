@@ -1,6 +1,7 @@
 package controller;
 
 import model.CustomerDAO; // Import CustomerDAO
+import model.Customer; // Import Customer class
 import model.Payload;
 import model.Session;
 import model.User;
@@ -68,7 +69,7 @@ public class UserHandler {
         return new Payload("User registered successfully", null, true);
     }
 
-    public Payload LoginCustomer(String email, String password) {
+    public Payload Login(String email, String password) {
 
         User user = userDAO.getUserByEmail(email);
         if (user == null) {
@@ -83,6 +84,29 @@ public class UserHandler {
 
     public void LogoutCustomer() {
         session.clearSession();
+    }
+
+    public Payload TopUpBalance(String customerId, double amount) {
+        if (customerId == null || customerId.trim().isEmpty()) {
+            return new Payload("Customer ID cannot be empty.", null, false);
+        }
+        if (amount <= 0) {
+            return new Payload("Top-up amount must be positive.", null, false);
+        }
+
+        boolean success = customerDAO.updateCustomerBalance(customerId, amount);
+        if (success) {
+            // Update the current user's balance in the session
+            User currentUser = session.getCurrentUser();
+            if (currentUser instanceof Customer) {
+                Customer customer = (Customer) currentUser;
+                customer.setBalance(customer.getBalance() + amount);
+                session.setCurrentUser(customer);
+            }
+            return new Payload("Top-up successful.", null, true);
+        } else {
+            return new Payload("Failed to process top-up.", null, false);
+        }
     }
 
     private Payload validateUserData(String fullName, String email, String password, String phone, String address,

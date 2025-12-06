@@ -17,6 +17,19 @@ public class CustomerDAO {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+        return false;
+        }
+    }
+
+    public boolean updateCustomerBalance(String customerId, double amount) {
+        String sql = "UPDATE customers SET balance = balance + ? WHERE id_user = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setDouble(1, amount);
+            pstmt.setString(2, customerId);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }

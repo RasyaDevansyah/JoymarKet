@@ -78,7 +78,7 @@ public class LoginView extends BorderPane {
 
         String email = getEmail();
         String password = getPassword();
-        Payload result = userController.LoginCustomer(email, password);
+        Payload result = userController.Login(email, password);
 
         if (result.isSuccess()) {
             System.out.println("Login successful: " + result.getMessage());
