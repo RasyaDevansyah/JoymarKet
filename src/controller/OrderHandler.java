@@ -16,6 +16,8 @@ import model.OrderHeaderDAO;
 import model.Payload;
 import model.Product;
 import model.ProductDAO;
+import model.PromoDAO; // Import PromoDAO
+import model.Session;
 import model.User;
 
 public class OrderHandler {
@@ -24,6 +26,7 @@ public class OrderHandler {
     OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
     ProductDAO productDAO = new ProductDAO();
     DeliveryDAO deliveryDAO = new DeliveryDAO(); // Add DeliveryDAO
+    PromoDAO promoDAO = new PromoDAO(); // Add PromoDAO
 
     public Payload processCheckout(double totalAmount, User user, String promoId) {
         Payload validationPayload = validateCheckout(totalAmount, user);
@@ -61,6 +64,11 @@ public class OrderHandler {
                 OrderDetail orderDetail = new OrderDetail(orderId, item.getProduct().getIdProduct(), item.getCount());
                 orderDetailDAO.insert(orderDetail);
                 productDAO.updateStock(item.getProduct().getIdProduct(), item.getCount());
+            }
+
+            // Mark promo as used if applied
+            if (promoId != null) {
+                promoDAO.markPromoAsUsed(customer.getIdUser(), promoId);
             }
         }
 

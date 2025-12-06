@@ -52,8 +52,7 @@ public class CartView extends BorderPane {
     private Button continueShoppingButton;
     private Button checkoutButton;
 
-    private String appliedPromoId = null; // To store applied promo ID
-    private double discountedTotal = 0.0; // To store discounted total
+    private Promo appliedPromo = null; // To store applied promo object
 
     public CartView() {
         cartItemHandler = new CartItemHandler();
@@ -83,10 +82,29 @@ public class CartView extends BorderPane {
                 return;
             }
 
-            // Pass appliedPromoId to processCheckout
-            Payload checkoutPayload = orderHandler.processCheckout(total, currentUser, appliedPromoId);
+            String promoIdToUse = null;
+            double finalTotal = total;
+
+            if (appliedPromo != null) {
+                // Check if the promo has already been used by the current user
+                if (promoHandler.isPromoUsedByUser(appliedPromo.getIdPromo(), currentUser.getIdUser())) {
+                    showAlert(AlertType.ERROR, "Error", "Promo Already Used", "This promo code has already been used.");
+                    clearPromo();
+                    return;
+                }
+                finalTotal = promoHandler.applyPromoDiscount(appliedPromo, total);
+                promoIdToUse = appliedPromo.getIdPromo();
+            }
+
+            // Pass appliedPromoId (if any) to processCheckout
+            Payload checkoutPayload = orderHandler.processCheckout(finalTotal, currentUser, promoIdToUse);
 
             if (checkoutPayload.isSuccess()) {
+                // Mark promo as used if successfully applied
+                if (appliedPromo != null) {
+                    promoHandler.markPromoAsUsed(appliedPromo.getIdPromo(), currentUser.getIdUser());
+                    clearPromo();
+                }
                 showAlert(AlertType.INFORMATION, "Success", "Checkout Successful", checkoutPayload.getMessage());
                 Main.getInstance().changePageTo("OrderHistory"); // Redirect to OrderHistoryView
             } else {
@@ -126,7 +144,9 @@ public class CartView extends BorderPane {
                     Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
                     if (product != null && product.getStock() <= 0) {
                         setStyle("-fx-background-color: #ffcdd2;"); // Light red for out of stock
-                    } else {
+                    }
+
+                    else {
                         setStyle("");
                     }
                 }
@@ -251,7 +271,9 @@ public class CartView extends BorderPane {
                 super.updateItem(subtotal, empty);
                 if (empty || subtotal == null) {
                     setText(null);
-                } else {
+                }
+
+                 else {
                     setText(String.format("Rp %.2f", subtotal));
                 }
             }
@@ -288,7 +310,7 @@ public class CartView extends BorderPane {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
                         alert.setTitle("Confirm Deletion");
                         alert.setHeaderText("Remove Item from Cart");
-                        alert.setContentText("Are you sure you want to remove '" + item.getProduct().getName() + "'?");
+                        alert.setContentText("Are you sure you want to remove \'" + item.getProduct().getName() + "\'?");
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK) {
                             Payload payload = cartItemHandler.removeCartItem(item);
@@ -307,12 +329,16 @@ public class CartView extends BorderPane {
                 super.updateItem(item, empty);
                 if (empty) {
                     setGraphic(null);
-                } else {
+                }
+
+                 else {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     Product product = new model.ProductDAO().getProductById(cartItem.getProduct().getIdProduct());
                     if (product != null && product.getStock() <= 0) {
                         pane.getChildren().setAll(outOfStockLabel, deleteButton);
-                    } else {
+                    }
+
+                    else {
                         pane.getChildren().setAll(deleteButton);
                     }
                     setGraphic(pane);
@@ -339,7 +365,6 @@ public class CartView extends BorderPane {
 
             Payload payload = cartItemHandler.getCartItems();
             if (payload.isSuccess() && payload.getData() instanceof List) {
-                @SuppressWarnings("unchecked")
                 List<CartItem> items = (List<CartItem>) payload.getData();
                 cartTable.getItems().addAll(items);
                 updateTotalLabel();
@@ -361,28 +386,62 @@ public class CartView extends BorderPane {
                 total += item.getProduct().getPrice() * item.getCount();
             }
         }
-        return discountedTotal > 0 ? discountedTotal : total; // Apply discount if available
+        return total; // Always return the pre-discount total
     }
 
     public void updateTotalLabel() {
         double total = calculateTotal();
         totalLabel.setText(String.format("Total: Rp %.2f", total));
+        if (appliedPromo != null) {
+            double discounted = promoHandler.applyPromoDiscount(appliedPromo, total);
+            promoInfoLabel.setText("Promo \'" + appliedPromo.getCode() + "\' applied. Discount: " + String.format("Rp %.2f", (total - discounted)));
+            totalLabel.setText(String.format("Total (with promo): Rp %.2f", discounted));
+        }
     }
 
     private void handleApplyPromo() {
         String promoCode = promoCodeField.getText();
-        Payload payload = promoHandler.applyPromo(promoCode, calculateTotal());
-        if (payload.isSuccess()) {
-            discountedTotal = (double) payload.getData();
-            appliedPromoId = payload.getPromoId();
-            promoInfoLabel.setText("Promo applied! Discounted Total: Rp " + String.format("%.2f", discountedTotal));
-            updateTotalLabel();
-        } else {
-            discountedTotal = 0.0; // Reset discounted total
-            appliedPromoId = null; // Clear applied promo ID
-            promoInfoLabel.setText("Error: " + payload.getMessage());
-            updateTotalLabel();
+        if (promoCode.isEmpty()) {
+            showAlert(AlertType.WARNING, "Warning", "Empty Promo Code", "Please enter a promo code.");
+            return;
         }
+
+        // Clear existing promo if any, before applying a new one
+        if (appliedPromo != null) {
+            showAlert(AlertType.WARNING, "Warning", "Promo Already Applied", "One promo is already applied. Clear it first to apply a new one.");
+            return;
+        }
+
+        User currentUser = Session.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(AlertType.ERROR, "Error", "Not Logged In", "Please log in to apply promo.");
+            return;
+        }
+
+        // Validate promo code against the current total and user
+        Payload payload = promoHandler.validatePromo(promoCode, calculateTotal(), currentUser.getIdUser());
+
+        if (payload.isSuccess() && payload.getData() instanceof Promo) {
+            appliedPromo = (Promo) payload.getData();
+            promoInfoLabel.setText("Promo \'" + appliedPromo.getCode() + "\' applied.");
+            updateTotalLabel(); // Update label to show discounted total preview
+            promoCodeField.setDisable(true);
+            applyPromoButton.setText("Clear Promo");
+            applyPromoButton.setOnAction(e -> clearPromo());
+        } else {
+            clearPromo();
+            showAlert(AlertType.ERROR, "Error", "Promo Application Failed", payload.getMessage());
+        }
+    }
+
+    private void clearPromo() {
+        appliedPromo = null;
+        promoCodeField.setText("");
+        promoCodeField.setDisable(false);
+        applyPromoButton.setText("Apply Promo");
+        applyPromoButton.setOnAction(e -> handleApplyPromo());
+        promoInfoLabel.setText("");
+        updateTotalLabel(); // Recalculate total without promo
     }
 
     private void showAlert(AlertType alertType, String title, String headerText, String contentText) {

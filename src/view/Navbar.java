@@ -85,7 +85,7 @@ public class Navbar extends HBox {
                 productsButton = new Button("Products");
                 viewAllCouriersButton = new Button("Couriers");
                 viewAllOrdersButton = new Button("All Orders");
-                
+
                 productsButton.setOnAction(e -> changePageTo("Products"));
                 viewAllCouriersButton.setOnAction(e -> changePageTo("ViewAllCouriers"));
                 viewAllOrdersButton.setOnAction(e -> changePageTo("ViewAllOrders"));
@@ -93,10 +93,13 @@ public class Navbar extends HBox {
                         usernameButton);
                 break;
             case "COURIER":
+                productsButton = new Button("Products");
                 deliveriesButton = new Button("Deliveries");
                 deliveriesButton.setOnAction(e -> changePageTo("Deliveries"));
 
-                getChildren().addAll(deliveriesButton, spacer, usernameButton);
+                productsButton.setOnAction(e -> changePageTo("Products"));
+
+                getChildren().addAll(productsButton, deliveriesButton, spacer, usernameButton);
                 break;
             default:
                 // Fallback for unknown roles, perhaps just the username button

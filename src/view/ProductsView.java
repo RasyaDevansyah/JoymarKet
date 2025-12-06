@@ -112,7 +112,12 @@ public class ProductsView extends BorderPane {
                         setGraphic(editButton);
                     } else if (currentUser != null && currentUser instanceof model.Customer) {
                         setGraphic(addButton);
+                    } else if (currentUser == null) {
+                        setGraphic(addButton);
+                    } else {
+                        setGraphic(null);
                     }
+
                 }
             }
         });

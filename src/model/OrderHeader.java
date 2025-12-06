@@ -6,14 +6,29 @@ public class OrderHeader {
     private int idOrder;
     private String idCustomer;
     private String idPromo;
+    private String promoCode; // New field
+    private String promoHeadline; // New field
     private String status;
     private Date orderedAt;
     private double totalAmount;
 
+    // Constructor for creating new OrderHeaders (without idOrder)
     public OrderHeader(String idCustomer, String idPromo, String status, Date orderedAt,
             double totalAmount) {
         this.idCustomer = idCustomer;
         this.idPromo = idPromo;
+        this.status = status;
+        this.orderedAt = orderedAt;
+        this.totalAmount = totalAmount;
+    }
+
+    // Full constructor (including idOrder and promo details for fetching from DB)
+    public OrderHeader(int idOrder, String idCustomer, String idPromo, String promoCode, String promoHeadline, String status, Date orderedAt, double totalAmount) {
+        this.idOrder = idOrder;
+        this.idCustomer = idCustomer;
+        this.idPromo = idPromo;
+        this.promoCode = promoCode;
+        this.promoHeadline = promoHeadline;
         this.status = status;
         this.orderedAt = orderedAt;
         this.totalAmount = totalAmount;
@@ -43,6 +58,23 @@ public class OrderHeader {
         this.idPromo = idPromo;
     }
 
+    // New getters and setters for promoCode and promoHeadline
+    public String getPromoCode() {
+        return promoCode;
+    }
+
+    public void setPromoCode(String promoCode) {
+        this.promoCode = promoCode;
+    }
+
+    public String getPromoHeadline() {
+        return promoHeadline;
+    }
+
+    public void setPromoHeadline(String promoHeadline) {
+        this.promoHeadline = promoHeadline;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -66,7 +98,4 @@ public class OrderHeader {
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
-
-    
-
 }

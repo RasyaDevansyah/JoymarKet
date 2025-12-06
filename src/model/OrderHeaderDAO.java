@@ -34,19 +34,22 @@ public class OrderHeaderDAO {
 
     public List<OrderHeader> getOrderHeadersByCustomerId(String customerId) {
         List<OrderHeader> orderHeaders = new java.util.ArrayList<>();
-        String sql = "SELECT id_order, id_customer, id_promo, status, ordered_at, total_amount FROM order_headers WHERE id_customer = ? ORDER BY ordered_at DESC";
+        String sql = "SELECT oh.id_order, oh.id_customer, oh.id_promo, p.code AS promo_code, p.headline AS promo_headline, oh.status, oh.ordered_at, oh.total_amount " +
+                     "FROM order_headers oh LEFT JOIN promos p ON oh.id_promo = p.id_promo WHERE oh.id_customer = ? ORDER BY oh.ordered_at DESC";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, customerId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     OrderHeader orderHeader = new OrderHeader(
+                        rs.getInt("id_order"),
                         rs.getString("id_customer"),
                         rs.getString("id_promo"),
+                        rs.getString("promo_code"),
+                        rs.getString("promo_headline"),
                         rs.getString("status"),
                         rs.getDate("ordered_at"),
                         rs.getDouble("total_amount")
                     );
-                    orderHeader.setIdOrder(rs.getInt("id_order"));
                     orderHeaders.add(orderHeader);
                 }
             }
@@ -57,19 +60,22 @@ public class OrderHeaderDAO {
     }
 
     public OrderHeader getOrderHeaderById(int orderId) {
-        String sql = "SELECT id_order, id_customer, id_promo, status, ordered_at, total_amount FROM order_headers WHERE id_order = ?";
+        String sql = "SELECT oh.id_order, oh.id_customer, oh.id_promo, p.code AS promo_code, p.headline AS promo_headline, oh.status, oh.ordered_at, oh.total_amount " +
+                     "FROM order_headers oh LEFT JOIN promos p ON oh.id_promo = p.id_promo WHERE oh.id_order = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setInt(1, orderId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     OrderHeader orderHeader = new OrderHeader(
+                        rs.getInt("id_order"),
                         rs.getString("id_customer"),
                         rs.getString("id_promo"),
+                        rs.getString("promo_code"),
+                        rs.getString("promo_headline"),
                         rs.getString("status"),
                         rs.getDate("ordered_at"),
                         rs.getDouble("total_amount")
                     );
-                    orderHeader.setIdOrder(rs.getInt("id_order"));
                     return orderHeader;
                 }
             }
@@ -81,21 +87,26 @@ public class OrderHeaderDAO {
 
     public List<OrderHeader> getAllOrderHeaders() {
         List<OrderHeader> orderHeaders = new java.util.ArrayList<>();
-        String sql = "SELECT id_order, id_customer, id_promo, status, ordered_at, total_amount FROM order_headers ORDER BY ordered_at DESC";
+        String sql = "SELECT oh.id_order, oh.id_customer, oh.id_promo, p.code AS promo_code, p.headline AS promo_headline, oh.status, oh.ordered_at, oh.total_amount " +
+                     "FROM order_headers oh LEFT JOIN promos p ON oh.id_promo = p.id_promo ORDER BY oh.ordered_at DESC";
         try (PreparedStatement pstmt = connect.preparedStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 OrderHeader orderHeader = new OrderHeader(
+                    rs.getInt("id_order"),
                     rs.getString("id_customer"),
                     rs.getString("id_promo"),
+                    rs.getString("promo_code"),
+                    rs.getString("promo_headline"),
                     rs.getString("status"),
                     rs.getDate("ordered_at"),
                     rs.getDouble("total_amount")
                 );
-                orderHeader.setIdOrder(rs.getInt("id_order"));
                 orderHeaders.add(orderHeader);
             }
-        } catch (SQLException e) {
+        }
+
+         catch (SQLException e) {
             e.printStackTrace();
         }
         return orderHeaders;
@@ -107,7 +118,9 @@ public class OrderHeaderDAO {
             pstmt.setString(1, newStatus);
             pstmt.setInt(2, orderId);
             return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
+        }
+
+         catch (SQLException e) {
             e.printStackTrace();
             return false;
         }

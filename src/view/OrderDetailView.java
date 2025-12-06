@@ -30,8 +30,10 @@ public class OrderDetailView extends BorderPane {
     private OrderHandler orderHandler;
     private ProductDAO productDAO;
     private Label orderIdLabel;
-    private Label customerIdLabel;
-    private Label promoIdLabel;
+    // Removed customerIdLabel
+    // Removed promoIdLabel
+    private Label promoCodeLabel; // New Label
+    private Label promoHeadlineLabel; // New Label
     private Label statusLabel;
     private Label orderedAtLabel;
     private Label totalAmountLabel;
@@ -53,8 +55,8 @@ public class OrderDetailView extends BorderPane {
         setAlignment(title, Pos.TOP_CENTER);
 
         orderIdLabel = new Label("Order ID: ");
-        customerIdLabel = new Label("Customer ID: ");
-        promoIdLabel = new Label("Promo ID: ");
+        promoCodeLabel = new Label("Promo Code: "); // Initialize new label
+        promoHeadlineLabel = new Label("Promo Headline: "); // Initialize new label
         statusLabel = new Label("Status: ");
         orderedAtLabel = new Label("Ordered At: ");
         totalAmountLabel = new Label("Total Amount: ");
@@ -80,14 +82,16 @@ public class OrderDetailView extends BorderPane {
                         Main.getInstance().changePageTo("Products"); // Fallback
                         break;
                 }
-            } else {
+            }
+
+            else {
                 Main.getInstance().changePageTo("Products"); // Fallback if no user is logged in
             }
         });
 
         VBox infoBox = new VBox(5);
         infoBox.setPadding(new Insets(10));
-        infoBox.getChildren().addAll(orderIdLabel, customerIdLabel, promoIdLabel, statusLabel, orderedAtLabel,
+        infoBox.getChildren().addAll(orderIdLabel, promoCodeLabel, promoHeadlineLabel, statusLabel, orderedAtLabel,
                 totalAmountLabel);
 
         VBox contentBox = new VBox(10);
@@ -152,8 +156,8 @@ public class OrderDetailView extends BorderPane {
         if (headerPayload.isSuccess() && headerPayload.getData() instanceof OrderHeader) {
             OrderHeader orderHeader = (OrderHeader) headerPayload.getData();
             orderIdLabel.setText("Order ID: " + orderHeader.getIdOrder());
-            customerIdLabel.setText("Customer ID: " + orderHeader.getIdCustomer());
-            promoIdLabel.setText("Promo ID: " + (orderHeader.getIdPromo() != null ? orderHeader.getIdPromo() : "N/A"));
+            promoCodeLabel.setText("Promo Code: " + (orderHeader.getPromoCode() != null ? orderHeader.getPromoCode() : "N/A"));
+            promoHeadlineLabel.setText("Promo Headline: " + (orderHeader.getPromoHeadline() != null ? orderHeader.getPromoHeadline() : "N/A"));
             statusLabel.setText("Status: " + orderHeader.getStatus());
             orderedAtLabel.setText("Ordered At: " + orderHeader.getOrderedAt().toString());
             totalAmountLabel.setText(String.format("Total Amount: Rp %.2f", orderHeader.getTotalAmount()));

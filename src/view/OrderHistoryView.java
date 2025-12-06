@@ -49,11 +49,23 @@ public class OrderHistoryView extends BorderPane {
         TableColumn<OrderHeader, Integer> idCol = new TableColumn<>("Order ID");
         idCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getIdOrder()));
 
-        TableColumn<OrderHeader, String> customerIdCol = new TableColumn<>("Customer ID");
-        customerIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdCustomer()));
+        // Removed Customer ID column as requested
+        // TableColumn<OrderHeader, String> customerIdCol = new TableColumn<>("Customer ID");
+        // customerIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdCustomer()));
 
-        TableColumn<OrderHeader, String> promoIdCol = new TableColumn<>("Promo ID");
-        promoIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdPromo()));
+        // Removed Promo ID column as requested
+        // TableColumn<OrderHeader, String> promoIdCol = new TableColumn<>("Promo ID");
+        // promoIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdPromo()));
+
+        TableColumn<OrderHeader, String> promoCodeCol = new TableColumn<>("Promo Code");
+        promoCodeCol.setCellValueFactory(cellData -> new SimpleStringProperty(
+            cellData.getValue().getPromoCode() != null ? cellData.getValue().getPromoCode() : "N/A"
+        ));
+
+        TableColumn<OrderHeader, String> promoHeadlineCol = new TableColumn<>("Promo Headline");
+        promoHeadlineCol.setCellValueFactory(cellData -> new SimpleStringProperty(
+            cellData.getValue().getPromoHeadline() != null ? cellData.getValue().getPromoHeadline() : "N/A"
+        ));
 
         TableColumn<OrderHeader, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
@@ -100,7 +112,7 @@ public class OrderHistoryView extends BorderPane {
             }
         });
 
-        orderTable.getColumns().addAll(idCol, customerIdCol, promoIdCol, statusCol, orderDateCol, totalAmountCol, detailCol);
+        orderTable.getColumns().addAll(idCol, promoCodeCol, promoHeadlineCol, statusCol, orderDateCol, totalAmountCol, detailCol);
     }
 
     private void loadOrderData() {
