@@ -13,7 +13,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.Main;
@@ -66,7 +65,8 @@ public class OrderDetailView extends BorderPane {
 
         VBox infoBox = new VBox(5);
         infoBox.setPadding(new Insets(10));
-        infoBox.getChildren().addAll(orderIdLabel, customerIdLabel, promoIdLabel, statusLabel, orderedAtLabel, totalAmountLabel);
+        infoBox.getChildren().addAll(orderIdLabel, customerIdLabel, promoIdLabel, statusLabel, orderedAtLabel,
+                totalAmountLabel);
 
         VBox contentBox = new VBox(10);
         contentBox.setAlignment(Pos.TOP_CENTER);
