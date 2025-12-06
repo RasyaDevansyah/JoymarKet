@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import util.Connect;
@@ -35,16 +36,54 @@ public class UserDAO {
         String sql = "SELECT * FROM users WHERE email = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, email);
-            var rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new User(
-                        rs.getString("id_user"),
-                        rs.getString("full_name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("phone"),
-                        rs.getString("address"),
-                        rs.getString("role"));
+                String idUser = rs.getString("id_user");
+                String fullName = rs.getString("full_name");
+                String userEmail = rs.getString("email");
+                String password = rs.getString("password");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+                String role = rs.getString("role");
+
+                switch (role) {
+                    case "ADMIN":
+                        String adminSql = "SELECT emergency_contact FROM admins WHERE id_user = ?";
+                        try (PreparedStatement adminPstmt = connect.preparedStatement(adminSql)) {
+                            adminPstmt.setString(1, idUser);
+                            ResultSet adminRs = adminPstmt.executeQuery();
+                            if (adminRs.next()) {
+                                String emergencyContact = adminRs.getString("emergency_contact");
+                                return new Admin(idUser, fullName, userEmail, password, phone, address, emergencyContact);
+                            }
+                        }
+                        break;
+                    case "CUSTOMER":
+                        String customerSql = "SELECT balance FROM customers WHERE id_user = ?";
+                        try (PreparedStatement customerPstmt = connect.preparedStatement(customerSql)) {
+                            customerPstmt.setString(1, idUser);
+                            ResultSet customerRs = customerPstmt.executeQuery();
+                            if (customerRs.next()) {
+                                double balance = customerRs.getDouble("balance");
+                                return new Customer(idUser, fullName, userEmail, password, phone, address, balance);
+                            }
+                        }
+                        break;
+                    case "COURIER":
+                        String courierSql = "SELECT vehicle_type, vehicle_plate FROM couriers WHERE id_user = ?";
+                        try (PreparedStatement courierPstmt = connect.preparedStatement(courierSql)) {
+                            courierPstmt.setString(1, idUser);
+                            ResultSet courierRs = courierPstmt.executeQuery();
+                            if (courierRs.next()) {
+                                String vehicleType = courierRs.getString("vehicle_type");
+                                String vehiclePlate = courierRs.getString("vehicle_plate");
+                                return new Courier(idUser, fullName, userEmail, password, phone, address, vehicleType, vehiclePlate);
+                            }
+                        }
+                        break;
+                }
+                // Fallback to generic User if subclass data not found or role is unknown
+                return new User(idUser, fullName, userEmail, password, phone, address, role);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,16 +113,54 @@ public class UserDAO {
         String sql = "SELECT * FROM users WHERE id_user = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, idUser);
-            var rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new User(
-                        rs.getString("id_user"),
-                        rs.getString("full_name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("phone"),
-                        rs.getString("address"),
-                        rs.getString("role"));
+                String userId = rs.getString("id_user");
+                String fullName = rs.getString("full_name");
+                String userEmail = rs.getString("email");
+                String password = rs.getString("password");
+                String phone = rs.getString("phone");
+                String address = rs.getString("address");
+                String role = rs.getString("role");
+
+                switch (role) {
+                    case "ADMIN":
+                        String adminSql = "SELECT emergency_contact FROM admins WHERE id_user = ?";
+                        try (PreparedStatement adminPstmt = connect.preparedStatement(adminSql)) {
+                            adminPstmt.setString(1, userId);
+                            ResultSet adminRs = adminPstmt.executeQuery();
+                            if (adminRs.next()) {
+                                String emergencyContact = adminRs.getString("emergency_contact");
+                                return new Admin(userId, fullName, userEmail, password, phone, address, emergencyContact);
+                            }
+                        }
+                        break;
+                    case "CUSTOMER":
+                        String customerSql = "SELECT balance FROM customers WHERE id_user = ?";
+                        try (PreparedStatement customerPstmt = connect.preparedStatement(customerSql)) {
+                            customerPstmt.setString(1, userId);
+                            ResultSet customerRs = customerPstmt.executeQuery();
+                            if (customerRs.next()) {
+                                double balance = customerRs.getDouble("balance");
+                                return new Customer(userId, fullName, userEmail, password, phone, address, balance);
+                            }
+                        }
+                        break;
+                    case "COURIER":
+                        String courierSql = "SELECT vehicle_type, vehicle_plate FROM couriers WHERE id_user = ?";
+                        try (PreparedStatement courierPstmt = connect.preparedStatement(courierSql)) {
+                            courierPstmt.setString(1, userId);
+                            ResultSet courierRs = courierPstmt.executeQuery();
+                            if (courierRs.next()) {
+                                String vehicleType = courierRs.getString("vehicle_type");
+                                String vehiclePlate = courierRs.getString("vehicle_plate");
+                                return new Courier(userId, fullName, userEmail, password, phone, address, vehicleType, vehiclePlate);
+                            }
+                        }
+                        break;
+                }
+                // Fallback to generic User if subclass data not found or role is unknown
+                return new User(userId, fullName, userEmail, password, phone, address, role);
             }
         } catch (SQLException e) {
             e.printStackTrace();

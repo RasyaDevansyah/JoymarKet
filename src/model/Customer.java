@@ -3,9 +3,9 @@ package model;
 public class Customer extends User {
     private double balance;
 
-    public Customer(String idUser, String fullName, String email, String password, String phone, String address) {
+    public Customer(String idUser, String fullName, String email, String password, String phone, String address, double balance) {
         super(idUser, fullName, email, password, phone, address, "CUSTOMER");
-        this.balance = 0.0;
+        this.balance = balance;
     }
 
     public double getBalance() {
