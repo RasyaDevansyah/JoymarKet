@@ -79,4 +79,20 @@ public class CartItemDAO {
             return false;
         }
     }
+
+    public List<CartItem> getAllCartItems(String customerId) {
+        return getCartItemsByCustomerId(customerId);
+    }
+
+    public boolean clearCart(String idCustomer) {
+        String sql = "DELETE FROM cart_items WHERE id_customer = ?";
+        try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
+            pstmt.setString(1, idCustomer);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

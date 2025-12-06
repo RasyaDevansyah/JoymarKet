@@ -1,11 +1,58 @@
 package controller;
 
+import java.sql.Date;
+import java.util.List;
+
+import model.CartItem;
+import model.CartItemDAO;
 import model.Customer;
 import model.CustomerDAO;
+import model.OrderDetail;
+import model.OrderDetailDAO;
+import model.OrderHeader;
+import model.OrderHeaderDAO;
 import model.Payload;
 import model.User;
 
 public class OrderHandler {
+
+    OrderHeaderDAO orderHeaderDAO = new OrderHeaderDAO();
+    OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+
+    public Payload processCheckout(double totalAmount, User user) {
+        Payload validationPayload = validateCheckout(totalAmount, user);
+        if (!validationPayload.isSuccess()) {
+            return validationPayload;
+        }
+
+        Customer customer = (Customer) user;
+        CustomerDAO customerDAO = new CustomerDAO();
+        CartItemDAO cartItemDAO = new CartItemDAO();
+
+        // Reduce balance
+        double newBalance = customer.getBalance() - totalAmount;
+        customer.setBalance(newBalance);
+        customerDAO.updateBalance(customer.getIdUser(), newBalance);
+
+        // Create OrderHeader
+        Date orderDate = new Date(System.currentTimeMillis());
+        List<CartItem> cartItems = cartItemDAO.getAllCartItems(customer.getIdUser());
+        OrderHeader orderHeader = new OrderHeader(customer.getIdUser(), null, "Pending", orderDate, totalAmount);
+        int orderId = orderHeaderDAO.insert(orderHeader);
+
+        if (orderId != -1) {
+            // Create OrderDetails
+            for (CartItem item : cartItems) {
+                OrderDetail orderDetail = new OrderDetail(orderId, item.getProduct().getIdProduct(), item.getCount());
+                orderDetailDAO.insert(orderDetail);
+            }
+        }
+
+        // Clear cart
+        cartItemDAO.clearCart(customer.getIdUser());
+
+        return new Payload("Checkout successful.", null, true);
+    }
 
     public Payload validateCheckout(double totalAmount, User user) {
         if (!(user instanceof Customer)) {

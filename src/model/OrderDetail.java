@@ -1,21 +1,21 @@
 package model;
 
 public class OrderDetail {
-    private String idOrder;
+    private int idOrder;
     private String idProduct;
     private int qty;
 
-    public OrderDetail(String idOrder, String idProduct, int qty) {
+    public OrderDetail(int idOrder, String idProduct, int qty) {
         this.idOrder = idOrder;
         this.idProduct = idProduct;
         this.qty = qty;
     }
 
-    public String getIdOrder() {
+    public int getIdOrder() {
         return idOrder;
     }
 
-    public void setIdOrder(String idOrder) {
+    public void setIdOrder(int idOrder) {
         this.idOrder = idOrder;
     }
 

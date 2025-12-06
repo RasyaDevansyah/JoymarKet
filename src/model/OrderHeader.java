@@ -3,16 +3,15 @@ package model;
 import java.sql.Date;
 
 public class OrderHeader {
-    private String idOrder;
+    private int idOrder;
     private String idCustomer;
     private String idPromo;
     private String status;
     private Date orderedAt;
     private double totalAmount;
 
-    public OrderHeader(String idOrder, String idCustomer, String idPromo, String status, Date orderedAt,
+    public OrderHeader(String idCustomer, String idPromo, String status, Date orderedAt,
             double totalAmount) {
-        this.idOrder = idOrder;
         this.idCustomer = idCustomer;
         this.idPromo = idPromo;
         this.status = status;
@@ -20,11 +19,11 @@ public class OrderHeader {
         this.totalAmount = totalAmount;
     }
 
-    public String getIdOrder() {
+    public int getIdOrder() {
         return idOrder;
     }
 
-    public void setIdOrder(String idOrder) {
+    public void setIdOrder(int idOrder) {
         this.idOrder = idOrder;
     }
 

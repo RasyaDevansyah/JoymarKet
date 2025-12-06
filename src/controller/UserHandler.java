@@ -94,7 +94,7 @@ public class UserHandler {
             return new Payload("Top-up amount must be positive.", null, false);
         }
 
-        boolean success = customerDAO.updateCustomerBalance(customerId, amount);
+        boolean success = customerDAO.updateBalance(customerId, amount);
         if (success) {
             // Update the current user's balance in the session
             User currentUser = session.getCurrentUser();

@@ -65,14 +65,13 @@ public class CartView extends BorderPane {
                 return;
             }
 
-            Payload validationPayload = orderHandler.validateCheckout(total, currentUser);
+            Payload checkoutPayload = orderHandler.processCheckout(total, currentUser);
 
-            if (validationPayload.isSuccess()) {
-                showAlert(AlertType.INFORMATION, "Success", "Checkout Validated", validationPayload.getMessage() + "\nProceeding to checkout...");
-                // Actual checkout logic would go here
-                System.out.println("Proceeding to checkout!");
+            if (checkoutPayload.isSuccess()) {
+                showAlert(AlertType.INFORMATION, "Success", "Checkout Successful", checkoutPayload.getMessage());
+                loadCartData(); // Refresh cart view
             } else {
-                showAlert(AlertType.ERROR, "Error", "Checkout Failed", validationPayload.getMessage());
+                showAlert(AlertType.ERROR, "Error", "Checkout Failed", checkoutPayload.getMessage());
             }
         });
 
