@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -61,7 +62,8 @@ public class CartView extends BorderPane {
 
             double total = calculateTotal();
             if (total <= 0) {
-                showAlert(AlertType.WARNING, "Warning", "Empty Cart", "Your cart is empty. Please add items before checking out.");
+                showAlert(AlertType.WARNING, "Warning", "Empty Cart",
+                        "Your cart is empty. Please add items before checking out.");
                 return;
             }
 
@@ -84,6 +86,23 @@ public class CartView extends BorderPane {
 
         cartTable = new TableView<>();
         initializeTableColumns();
+
+        cartTable.setRowFactory(tv -> new TableRow<CartItem>() {
+            @Override
+            protected void updateItem(CartItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
+                    if (product != null && product.getStock() <= 0) {
+                        setStyle("-fx-background-color: #ffcdd2;"); // Light red for out of stock
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
 
         loadCartData();
 
@@ -149,13 +168,13 @@ public class CartView extends BorderPane {
                             CartItem item = getTableView().getItems().get(index);
                             item.setCount(newValue);
 
+                            isUpdating = true;
                             Payload payload = cartItemHandler.updateCartItem(item);
                             if (!payload.isSuccess()) {
                                 System.err.println("Error updating cart item: " + payload.getMessage());
                             }
-                            
-                            getTableView().refresh(); // Refresh table to update subtotal
                             updateTotalLabel();
+                            isUpdating = false;
                         }
                     }
                 });
@@ -171,8 +190,9 @@ public class CartView extends BorderPane {
                     isUpdating = true;
                     CartItem item = getTableView().getItems().get(getIndex());
                     Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
-                    if (product != null) {
-                        spinner.setValueFactory(new Spinner<Integer>(1, product.getStock(), quantity).getValueFactory());
+                    if (product != null && product.getStock() > 1) {
+                        spinner.setValueFactory(
+                                new Spinner<Integer>(1, product.getStock(), quantity).getValueFactory());
                     } else {
                         spinner.setValueFactory(new Spinner<Integer>(1, 99, quantity).getValueFactory());
                     }
@@ -205,20 +225,21 @@ public class CartView extends BorderPane {
 
         // --- COLUMN 5: Delete Button ---
         TableColumn<CartItem, Void> deleteCol = new TableColumn<>("Action");
-        deleteCol.setPrefWidth(120);
+        deleteCol.setPrefWidth(200);
         deleteCol.setCellValueFactory(param -> new SimpleObjectProperty<>(null));
 
         deleteCol.setCellFactory(column -> new TableCell<CartItem, Void>() {
             private final Button deleteButton = new Button("Delete");
-            private final HBox pane = new HBox(deleteButton); // Wrap button in HBox
+            private final Label outOfStockLabel = new Label("Out of Stock");
+            private final HBox pane = new HBox();
 
             {
                 deleteButton.setPrefWidth(80);
                 deleteButton.setAlignment(Pos.CENTER);
                 deleteButton.setPickOnBounds(true);
+                outOfStockLabel.setStyle("-fx-text-fill: red;");
 
                 pane.setAlignment(Pos.CENTER);
-
                 pane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
                     if (event.getTarget() == deleteButton) {
                         deleteButton.fire();
@@ -227,23 +248,19 @@ public class CartView extends BorderPane {
                 });
 
                 deleteButton.setOnAction(event -> {
-                    System.out.println("Delete button action fired for item at index: " + getIndex());
                     CartItem item = getTableView().getItems().get(getIndex());
                     if (item != null) {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
                         alert.setTitle("Confirm Deletion");
                         alert.setHeaderText("Remove Item from Cart");
-                        alert.setContentText("Are you sure you want to remove \'" + item.getProduct().getName() + "\'?");
-
+                        alert.setContentText("Are you sure you want to remove '" + item.getProduct().getName() + "'?");
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK) {
                             Payload payload = cartItemHandler.removeCartItem(item);
                             if (!payload.isSuccess()) {
                                 System.err.println("Error removing cart item: " + payload.getMessage());
                             }
-                            Platform.runLater(() -> {
-                                loadCartData();
-                            });
+                            Platform.runLater(() -> loadCartData());
                         }
                     }
                 });
@@ -254,8 +271,14 @@ public class CartView extends BorderPane {
                 super.updateItem(item, empty);
                 if (empty) {
                     setGraphic(null);
-                }
-                else {
+                } else {
+                    CartItem cartItem = getTableView().getItems().get(getIndex());
+                    Product product = new model.ProductDAO().getProductById(cartItem.getProduct().getIdProduct());
+                    if (product != null && product.getStock() <= 0) {
+                        pane.getChildren().setAll(outOfStockLabel, deleteButton);
+                    } else {
+                        pane.getChildren().setAll(deleteButton);
+                    }
                     setGraphic(pane);
                     setAlignment(Pos.CENTER);
                 }
@@ -287,7 +310,10 @@ public class CartView extends BorderPane {
     private double calculateTotal() {
         double total = 0.0;
         for (CartItem item : cartTable.getItems()) {
-            total += item.getProduct().getPrice() * item.getCount();
+            Product product = new model.ProductDAO().getProductById(item.getProduct().getIdProduct());
+            if (product != null && product.getStock() > 0) {
+                total += item.getProduct().getPrice() * item.getCount();
+            }
         }
         return total;
     }
