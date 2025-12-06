@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import controller.CartItemHandler;
+import controller.OrderHandler;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,12 +35,14 @@ public class CartView extends BorderPane {
 
     private TableView<CartItem> cartTable;
     private CartItemHandler cartItemHandler;
+    private OrderHandler orderHandler;
     private Label totalLabel;
     private Button continueShoppingButton;
     private Button checkoutButton;
 
     public CartView() {
         cartItemHandler = new CartItemHandler();
+        orderHandler = new OrderHandler();
 
         // Continue Shopping Button
         continueShoppingButton = new Button("Continue Shopping");
@@ -50,8 +53,27 @@ public class CartView extends BorderPane {
         // Checkout Button
         checkoutButton = new Button("Checkout");
         checkoutButton.setOnAction(e -> {
-            // Placeholder for checkout logic
-            System.out.println("Checkout button clicked!");
+            User currentUser = Session.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                showAlert(AlertType.ERROR, "Error", "Not Logged In", "Please log in to proceed with checkout.");
+                return;
+            }
+
+            double total = calculateTotal();
+            if (total <= 0) {
+                showAlert(AlertType.WARNING, "Warning", "Empty Cart", "Your cart is empty. Please add items before checking out.");
+                return;
+            }
+
+            Payload validationPayload = orderHandler.validateCheckout(total, currentUser);
+
+            if (validationPayload.isSuccess()) {
+                showAlert(AlertType.INFORMATION, "Success", "Checkout Validated", validationPayload.getMessage() + "\nProceeding to checkout...");
+                // Actual checkout logic would go here
+                System.out.println("Proceeding to checkout!");
+            } else {
+                showAlert(AlertType.ERROR, "Error", "Checkout Failed", validationPayload.getMessage());
+            }
         });
 
         Label title = new Label("Shopping Cart");
@@ -77,7 +99,7 @@ public class CartView extends BorderPane {
         contentBox.getChildren().addAll(title, cartTable, totalLabel, buttonBox);
 
         setCenter(contentBox);
-        updateTotal(); // Initial total update
+        updateTotalLabel(); // Initial total update
     }
 
     private void initializeTableColumns() {
@@ -134,7 +156,7 @@ public class CartView extends BorderPane {
                             }
                             
                             getTableView().refresh(); // Refresh table to update subtotal
-                            updateTotal();
+                            updateTotalLabel();
                         }
                     }
                 });
@@ -212,7 +234,7 @@ public class CartView extends BorderPane {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
                         alert.setTitle("Confirm Deletion");
                         alert.setHeaderText("Remove Item from Cart");
-                        alert.setContentText("Are you sure you want to remove '" + item.getProduct().getName() + "'?");
+                        alert.setContentText("Are you sure you want to remove \'" + item.getProduct().getName() + "\'?");
 
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -233,7 +255,8 @@ public class CartView extends BorderPane {
                 super.updateItem(item, empty);
                 if (empty) {
                     setGraphic(null);
-                } else {
+                }
+                else {
                     setGraphic(pane);
                     setAlignment(Pos.CENTER);
                 }
@@ -252,7 +275,7 @@ public class CartView extends BorderPane {
                 @SuppressWarnings("unchecked")
                 List<CartItem> items = (List<CartItem>) payload.getData();
                 cartTable.getItems().addAll(items);
-                updateTotal();
+                updateTotalLabel();
             } else {
                 System.err.println("Error loading cart data: " + payload.getMessage());
                 totalLabel.setText("Failed to load cart. " + payload.getMessage());
@@ -262,11 +285,24 @@ public class CartView extends BorderPane {
         }
     }
 
-    public void updateTotal() {
+    private double calculateTotal() {
         double total = 0.0;
         for (CartItem item : cartTable.getItems()) {
             total += item.getProduct().getPrice() * item.getCount();
         }
+        return total;
+    }
+
+    public void updateTotalLabel() {
+        double total = calculateTotal();
         totalLabel.setText(String.format("Total: Rp %.2f", total));
+    }
+
+    private void showAlert(AlertType alertType, String title, String headerText, String contentText) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.showAndWait();
     }
 }

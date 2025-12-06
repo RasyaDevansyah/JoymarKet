@@ -79,6 +79,7 @@ public class Main extends Application {
 				mainLayout.setCenter(productsView);
 				break;
 			case "Topup":
+				topupView = new TopupView(); // Refresh topup view
 				mainLayout.setCenter(topupView);
 				break;
 			case "Cart":
