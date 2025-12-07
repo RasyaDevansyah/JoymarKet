@@ -139,6 +139,13 @@ public class ProductsView extends BorderPane {
         if (payload.isSuccess() && payload.getData() instanceof List) {
             @SuppressWarnings("unchecked")
             List<Product> products = (List<Product>) payload.getData();
+
+            User currentUser = Session.getInstance().getCurrentUser();
+            if (currentUser != null && currentUser instanceof model.Customer) {
+                // Filter out out-of-stock products for customers
+                products.removeIf(product -> product.getStock() <= 0);
+            }
+
             productTable.getItems().addAll(products);
         } else {
             showAlert(AlertType.ERROR, "Error", "Failed to load products: " + payload.getMessage());

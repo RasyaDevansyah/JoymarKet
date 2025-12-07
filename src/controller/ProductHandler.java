@@ -27,7 +27,33 @@ public class ProductHandler {
     }
 
     public Payload updateProduct(String productId, String name, double price, int stock, String category) {
+        // Validate product ID
+        if (productId == null || productId.trim().isEmpty()) {
+            return new Payload("Product ID cannot be empty", null, false);
+        }
+
+        // Validate name
+        if (name == null || name.trim().isEmpty()) {
+            return new Payload("Product name cannot be empty", null, false);
+        }
+
+        // Validate price
+        if (price < 0) {
+            return new Payload("Price cannot be negative", null, false);
+        }
+
+        // Validate stock
+        if (stock < 0) {
+            return new Payload("Stock cannot be negative", null, false);
+        }
+
+        // Validate category
+        if (category == null || category.trim().isEmpty()) {
+            return new Payload("Category cannot be empty", null, false);
+        }
+
         Product product = new Product(productId, name, price, stock, category);
+
         if (productDAO.updateProduct(product)) {
             return new Payload("Product updated successfully.", null, true);
         }

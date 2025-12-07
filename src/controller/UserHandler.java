@@ -135,7 +135,8 @@ public class UserHandler {
             return new Payload("Minimum top-up amount is Rp 10,000.", null, false);
         }
 
-        boolean success = customerDAO.updateBalance(customerId, amount);
+        boolean success = customerDAO.updateBalance(customerId,
+                customerDAO.getCustomerBalance(customerId) + amount);
         if (success) {
             // Update the current user\'s balance in the session
             User currentUser = session.getCurrentUser();
