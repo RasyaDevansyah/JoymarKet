@@ -127,31 +127,31 @@ CREATE TABLE cart_items (
 
 -- Admin User (1)
 INSERT INTO users (full_name,  email, password, phone, address, gender, role) VALUES
-("Admin User", "admin@joymarket.com", "12345678", "1234567890", "Admin Office, Joymarket Tower", "Male", "ADMIN");
+("Admin User", "admin@gmail.com", "12345678", "1234567890", "Admin Office, Joymarket Tower", "Male", "ADMIN");
 INSERT INTO admins (id_user, emergency_contact) VALUES
-((SELECT id_user FROM users WHERE email = "admin@joymarket.com"), "Admin Emergency Contact");
+((SELECT id_user FROM users WHERE email = "admin@gmail.com"), "Admin Emergency Contact");
 
 -- Customer User (1)
 INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
-("Customer User", "customer@joymarket.com", "12345678", "0812345678", "Customer Home, Joymarket City", "Female", "CUSTOMER");
+("Customer User", "customer@gmail.com", "12345678", "0812345678", "Customer Home, Joymarket City", "Female", "CUSTOMER");
 INSERT INTO customers (id_user, balance) VALUES
-((SELECT id_user FROM users WHERE email = "customer@joymarket.com"), 1000.00);
+((SELECT id_user FROM users WHERE email = "customer@gmail.com"), 1000.00);
 
 -- Courier Users (3)
 INSERT INTO users (full_name, email, password, phone, address, gender,role) VALUES
-("Courier User 1", "courier1@joymarket.com", "12345678", "0821000001", "Courier Depot 1, Joymarket City", "Male" , "COURIER");
+("Courier User 1", "courier1@gmail.com", "12345678", "0821000001", "Courier Depot 1, Joymarket City", "Male" , "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
-((SELECT id_user FROM users WHERE email = "courier1@joymarket.com"), "Motorcycle", "B 1001 ABC");
+((SELECT id_user FROM users WHERE email = "courier1@gmail.com"), "Motorcycle", "B 1001 ABC");
 
 INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
-("Courier User 2", "courier2@joymarket.com", "12345678", "0821000002", "Courier Depot 2, Joymarket City", "Male", "COURIER");
+("Courier User 2", "courier2@gmail.com", "12345678", "0821000002", "Courier Depot 2, Joymarket City", "Male", "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
-((SELECT id_user FROM users WHERE email = "courier2@joymarket.com"), "Car", "B 2002 DEF");
+((SELECT id_user FROM users WHERE email = "courier2@gmail.com"), "Car", "B 2002 DEF");
 
 INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
-("Courier User 3", "courier3@joymarket.com", "12345678", "0821000003", "Courier Depot 3, Joymarket City", "Male", "COURIER");
+("Courier User 3", "courier3@gmail.com", "12345678", "0821000003", "Courier Depot 3, Joymarket City", "Male", "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
-((SELECT id_user FROM users WHERE email = "courier3@joymarket.com"), "Van", "B 3003 GHI");
+((SELECT id_user FROM users WHERE email = "courier3@gmail.com"), "Van", "B 3003 GHI");
 
 -- Products (10 products with 20 stocks each) - unchanged from original
 INSERT INTO products (name, price, stock, category) VALUES
