@@ -90,12 +90,12 @@ public class TopupView extends BorderPane {
         String amountText = amountField.getText();
 
         // Call TopUpBalance with amountText (string)
-        Payload result = userHandler.TopUpBalance(currentUser.getIdUser(), amountText);
+        Payload result = userHandler.topUpBalance(currentUser.getIdUser(), amountText);
 
         if (result.isSuccess()) {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Top-up successful!");
             loadBalanceData();
-            Main.getInstance().refreshNavbar(); 
+            Main.getInstance().refreshNavbar();
             amountField.clear();
         } else {
             showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());

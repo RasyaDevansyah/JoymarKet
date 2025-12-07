@@ -28,7 +28,7 @@ public class LoginView extends BorderPane {
     private GridPane formGrid;
 
     private static String registrationSuccessMessage = null;
-    
+
     public LoginView() {
         initializeComponents();
         setupLayout();
@@ -41,7 +41,7 @@ public class LoginView extends BorderPane {
         errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
-        successLabel = new Label(); 
+        successLabel = new Label();
         successLabel.setStyle("-fx-text-fill: green;");
 
         emailField = new TextField();
@@ -78,7 +78,7 @@ public class LoginView extends BorderPane {
 
         String email = getEmail();
         String password = getPassword();
-        Payload result = userController.Login(email, password);
+        Payload result = userController.login(email, password);
 
         if (result.isSuccess()) {
             System.out.println("Login successful: " + result.getMessage());

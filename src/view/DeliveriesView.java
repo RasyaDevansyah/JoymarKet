@@ -144,7 +144,7 @@ public class DeliveriesView extends BorderPane {
                 List<Delivery> deliveries = (List<Delivery>) payload.getData();
                 List<OrderHeader> orders = new ArrayList<>();
                 for (Delivery delivery : deliveries) {
-                    Payload orderPayload = orderHandler.getOrderHeaderById(Integer.parseInt(delivery.getIdOrder()));
+                    Payload orderPayload = orderHandler.getCustomerOrderHeader(Integer.parseInt(delivery.getIdOrder()));
                     if (orderPayload.isSuccess() && orderPayload.getData() instanceof OrderHeader) {
                         orders.add((OrderHeader) orderPayload.getData());
                     }

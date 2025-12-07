@@ -37,11 +37,6 @@ public class OrderHandler {
         CustomerDAO customerDAO = new CustomerDAO();
         CartItemDAO cartItemDAO = new CartItemDAO();
 
-        // Reduce balance
-        double newBalance = customer.getBalance() - totalAmount;
-        customer.setBalance(newBalance);
-        customerDAO.updateBalance(customer.getIdUser(), newBalance);
-
         // Stock validation
         List<CartItem> cartItems = cartItemDAO.getAllCartItems(customer.getIdUser());
         for (CartItem item : cartItems) {
@@ -74,6 +69,11 @@ public class OrderHandler {
         // Clear cart
         cartItemDAO.clearCart(customer.getIdUser());
 
+        // Reduce balance
+        double newBalance = customer.getBalance() - totalAmount;
+        customer.setBalance(newBalance);
+        customerDAO.updateBalance(customer.getIdUser(), newBalance);
+
         return new Payload("Checkout successful.", null, true);
     }
 
@@ -92,34 +92,33 @@ public class OrderHandler {
         }
 
         if (updatedCustomer.getBalance() < totalAmount) {
-            return new Payload("Insufficient balance. Current balance: Rp " + String.format("%.2f", updatedCustomer.getBalance()), null, false);
+            return new Payload(
+                    "Insufficient balance. Current balance: Rp " + String.format("%.2f", updatedCustomer.getBalance()),
+                    null, false);
         }
 
-        
-        
         return new Payload("Balance is sufficient.", null, true);
-
 
     }
 
-    public Payload getOrderHeadersByCustomerId(String customerId) {
-        List<OrderHeader> orderHeaders = orderHeaderDAO.getOrderHeadersByCustomerId(customerId);
+    public Payload getCustomerOrderHeaders(String customerId) {
+        List<OrderHeader> orderHeaders = orderHeaderDAO.getCustomerOrderHeaders(customerId);
         if (orderHeaders != null) {
             return new Payload("Order headers retrieved successfully.", orderHeaders, true);
         }
         return new Payload("Failed to retrieve order headers.", null, false);
     }
 
-    public Payload getOrderHeaderById(int orderId) {
-        OrderHeader orderHeader = orderHeaderDAO.getOrderHeaderById(orderId);
+    public Payload getCustomerOrderHeader(int orderId) {
+        OrderHeader orderHeader = orderHeaderDAO.getCustomerOrderHeader(orderId);
         if (orderHeader != null) {
             return new Payload("Order header retrieved successfully.", orderHeader, true);
         }
         return new Payload("Failed to retrieve order header.", null, false);
     }
 
-    public Payload getOrderDetailsByOrderId(int orderId) {
-        List<OrderDetail> orderDetails = orderDetailDAO.getOrderDetailsByOrderId(orderId);
+    public Payload getCustomerOrderDetails(int orderId) {
+        List<OrderDetail> orderDetails = orderDetailDAO.getCustomerOrderDetails(orderId);
         if (orderDetails != null) {
             return new Payload("Order details retrieved successfully.", orderDetails, true);
         }

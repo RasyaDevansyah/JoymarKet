@@ -24,7 +24,7 @@ public class OrderDetailDAO {
         }
     }
 
-    public List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
+    public List<OrderDetail> getCustomerOrderDetails(int orderId) {
         List<OrderDetail> orderDetails = new java.util.ArrayList<>();
         String sql = "SELECT id_order, id_product, qty FROM order_details WHERE id_order = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
@@ -32,10 +32,9 @@ public class OrderDetailDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     OrderDetail orderDetail = new OrderDetail(
-                        rs.getInt("id_order"),
-                        rs.getString("id_product"),
-                        rs.getInt("qty")
-                    );
+                            rs.getInt("id_order"),
+                            rs.getString("id_product"),
+                            rs.getInt("qty"));
                     orderDetails.add(orderDetail);
                 }
             }

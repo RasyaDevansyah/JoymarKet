@@ -84,7 +84,7 @@ public class RegisterView extends BorderPane {
         String address = addressField.getText();
         String gender = genderComboBox.getValue();
 
-        Payload result = userController.SaveDataCustomer(name, email, password, confirmPassword, phone, address,
+        Payload result = userController.SaveDataUser(name, email, password, confirmPassword, phone, address,
                 gender);
 
         if (result.isSuccess()) {

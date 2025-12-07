@@ -81,14 +81,14 @@ public class AssignOrderView extends BorderPane {
     }
 
     private void loadOrderDetails() {
-        Payload payload = orderHandler.getOrderHeaderById(orderId);
+        Payload payload = orderHandler.getCustomerOrderHeader(orderId);
         if (payload.isSuccess() && payload.getData() instanceof OrderHeader) {
             OrderHeader order = (OrderHeader) payload.getData();
 
             orderIdLabel.setText(String.valueOf(order.getIdOrder()));
 
             String id = order.getIdCustomer().toString();
-            Payload customerPayload = userHandler.GetUser(id);
+            Payload customerPayload = userHandler.getUser(id);
 
             if (customerPayload.isSuccess() && customerPayload.getData() instanceof model.Customer) {
                 model.Customer customer = (model.Customer) customerPayload.getData();

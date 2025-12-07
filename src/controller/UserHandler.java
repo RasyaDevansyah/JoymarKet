@@ -13,7 +13,7 @@ public class UserHandler {
     CustomerDAO customerDAO = new CustomerDAO();
     private Session session = Session.getInstance();
 
-    public Payload EditProfile(String fullName, String email, String newPassword, String confirmPassword, String phone,
+    public Payload editProfile(String fullName, String email, String newPassword, String confirmPassword, String phone,
             String address,
             String gender) {
 
@@ -53,7 +53,7 @@ public class UserHandler {
         }
     }
 
-    public Payload GetUser(String idUser) {
+    public Payload getUser(String idUser) {
         User user = userDAO.getUserById(idUser);
         if (user != null) {
             return new Payload("User retrieved successfully.", user, true);
@@ -61,7 +61,7 @@ public class UserHandler {
         return new Payload("User not found.", null, false);
     }
 
-    public Payload SaveDataCustomer(String fullName, String email, String password, String confirmPassword,
+    public Payload SaveDataUser(String fullName, String email, String password, String confirmPassword,
             String phone, String address,
             String gender) {
 
@@ -95,7 +95,7 @@ public class UserHandler {
         return new Payload("User registered successfully", null, true);
     }
 
-    public Payload Login(String email, String password) {
+    public Payload login(String email, String password) {
         // Email validation - must be filled
         if (email == null || email.trim().isEmpty()) {
             return new Payload("Email must be filled", null, false);
@@ -125,7 +125,7 @@ public class UserHandler {
         session.clearSession();
     }
 
-    public Payload TopUpBalance(String customerId, String amountText) {
+    public Payload topUpBalance(String customerId, String amountText) {
         if (customerId == null || customerId.trim().isEmpty()) {
             return new Payload("Customer ID cannot be empty.", null, false);
         }

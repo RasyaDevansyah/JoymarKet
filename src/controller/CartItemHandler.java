@@ -33,7 +33,7 @@ public class CartItemHandler {
         return new Payload("Failed to retrieve cart items.", new ArrayList<CartItem>(), false);
     }
 
-    public Payload updateCartItem(CartItem cartItem) {
+    public Payload editCartItem(CartItem cartItem) {
         if (!session.isLoggedIn() || session.getCurrentUser() == null || cartItem == null) {
             return new Payload("User not logged in or invalid cart item.", null, false);
         }
@@ -56,7 +56,7 @@ public class CartItemHandler {
         }
     }
 
-    public Payload removeCartItem(CartItem cartItem) {
+    public Payload deleteCartItem(CartItem cartItem) {
         if (!session.isLoggedIn() || session.getCurrentUser() == null || cartItem == null) {
             return new Payload("User not logged in or invalid cart item.", null, false);
         }

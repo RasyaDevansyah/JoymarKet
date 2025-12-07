@@ -215,7 +215,7 @@ public class CartView extends BorderPane {
                             item.setCount(newValue);
 
                             isUpdating = true;
-                            Payload payload = cartItemHandler.updateCartItem(item);
+                            Payload payload = cartItemHandler.editCartItem(item);
                             if (!payload.isSuccess()) {
                                 System.err.println("Error updating cart item: " + payload.getMessage());
                             }
@@ -241,7 +241,8 @@ public class CartView extends BorderPane {
                         spinner.setValueFactory(
                                 new Spinner<Integer>(1, product.getStock(), quantity).getValueFactory());
                     } else {
-                        spinner.setValueFactory(new Spinner<Integer>(0, 0, 0).getValueFactory()); // Set to 0 if out of stock
+                        spinner.setValueFactory(new Spinner<Integer>(0, 0, 0).getValueFactory()); // Set to 0 if out of
+                                                                                                  // stock
                         spinner.setDisable(true); // Disable spinner if out of stock
                     }
                     isUpdating = false;
@@ -267,7 +268,7 @@ public class CartView extends BorderPane {
                     setText(null);
                 }
 
-                 else {
+                else {
                     setText(String.format("Rp %.2f", subtotal));
                 }
             }
@@ -304,10 +305,11 @@ public class CartView extends BorderPane {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
                         alert.setTitle("Confirm Deletion");
                         alert.setHeaderText("Remove Item from Cart");
-                        alert.setContentText("Are you sure you want to remove \'" + item.getProduct().getName() + "\'?");
+                        alert.setContentText(
+                                "Are you sure you want to remove \'" + item.getProduct().getName() + "\'?");
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.isPresent() && result.get() == ButtonType.OK) {
-                            Payload payload = cartItemHandler.removeCartItem(item);
+                            Payload payload = cartItemHandler.deleteCartItem(item);
                             if (!payload.isSuccess()) {
                                 System.err.println("Error removing cart item: " + payload.getMessage());
                             }
@@ -325,7 +327,7 @@ public class CartView extends BorderPane {
                     setGraphic(null);
                 }
 
-                 else {
+                else {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     Product product = new model.ProductDAO().getProductById(cartItem.getProduct().getIdProduct());
                     if (product != null && product.getStock() <= 0) {
@@ -388,7 +390,8 @@ public class CartView extends BorderPane {
         totalLabel.setText(String.format("Total: Rp %.2f", total));
         if (appliedPromo != null) {
             double discounted = promoHandler.applyPromoDiscount(appliedPromo, total);
-            promoInfoLabel.setText("Promo \'" + appliedPromo.getCode() + "\' applied. Discount: " + String.format("Rp %.2f", (total - discounted)));
+            promoInfoLabel.setText("Promo \'" + appliedPromo.getCode() + "\' applied. Discount: "
+                    + String.format("Rp %.2f", (total - discounted)));
             totalLabel.setText(String.format("Total (with promo): Rp %.2f", discounted));
         }
     }
@@ -402,7 +405,8 @@ public class CartView extends BorderPane {
 
         // Clear existing promo if any, before applying a new one
         if (appliedPromo != null) {
-            showAlert(AlertType.WARNING, "Warning", "Promo Already Applied", "One promo is already applied. Clear it first to apply a new one.");
+            showAlert(AlertType.WARNING, "Warning", "Promo Already Applied",
+                    "One promo is already applied. Clear it first to apply a new one.");
             return;
         }
 

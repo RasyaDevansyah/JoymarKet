@@ -118,7 +118,7 @@ public class ProfileView extends BorderPane {
 
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
-            Payload result = userHandler.EditProfile(fullName, email, newPassword, confirmPassword, phone, address,
+            Payload result = userHandler.editProfile(fullName, email, newPassword, confirmPassword, phone, address,
                     gender);
             if (result.isSuccess()) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");

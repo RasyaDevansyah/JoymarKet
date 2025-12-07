@@ -121,8 +121,7 @@ public class OrderDetailView extends BorderPane {
                 super.updateItem(price, empty);
                 if (empty || price == null) {
                     setText(null);
-                }
-                else {
+                } else {
                     setText(String.format("Rp %.2f", price));
                 }
             }
@@ -150,17 +149,19 @@ public class OrderDetailView extends BorderPane {
     }
 
     private void loadOrderDetails() {
-        Payload headerPayload = orderHandler.getOrderHeaderById(orderId);
+        Payload headerPayload = orderHandler.getCustomerOrderHeader(orderId);
         if (headerPayload.isSuccess() && headerPayload.getData() instanceof OrderHeader) {
             OrderHeader orderHeader = (OrderHeader) headerPayload.getData();
             orderIdLabel.setText("Order ID: " + orderHeader.getIdOrder());
-            promoCodeLabel.setText("Promo Code: " + (orderHeader.getPromoCode() != null ? orderHeader.getPromoCode() : "N/A"));
-            promoHeadlineLabel.setText("Promo Headline: " + (orderHeader.getPromoHeadline() != null ? orderHeader.getPromoHeadline() : "N/A"));
+            promoCodeLabel.setText(
+                    "Promo Code: " + (orderHeader.getPromoCode() != null ? orderHeader.getPromoCode() : "N/A"));
+            promoHeadlineLabel.setText("Promo Headline: "
+                    + (orderHeader.getPromoHeadline() != null ? orderHeader.getPromoHeadline() : "N/A"));
             statusLabel.setText("Status: " + orderHeader.getStatus());
             orderedAtLabel.setText("Ordered At: " + orderHeader.getOrderedAt().toString());
             totalAmountLabel.setText(String.format("Total Amount: Rp %.2f", orderHeader.getTotalAmount()));
 
-            Payload detailsPayload = orderHandler.getOrderDetailsByOrderId(orderId);
+            Payload detailsPayload = orderHandler.getCustomerOrderDetails(orderId);
             if (detailsPayload.isSuccess() && detailsPayload.getData() instanceof List) {
                 List<OrderDetail> details = (List<OrderDetail>) detailsPayload.getData();
                 detailTable.getItems().addAll(details);

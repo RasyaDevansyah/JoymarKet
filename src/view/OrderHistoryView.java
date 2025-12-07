@@ -51,22 +51,22 @@ public class OrderHistoryView extends BorderPane {
 
         TableColumn<OrderHeader, String> promoCodeCol = new TableColumn<>("Promo Code");
         promoCodeCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-            cellData.getValue().getPromoCode() != null ? cellData.getValue().getPromoCode() : "N/A"
-        ));
+                cellData.getValue().getPromoCode() != null ? cellData.getValue().getPromoCode() : "N/A"));
 
         TableColumn<OrderHeader, String> promoHeadlineCol = new TableColumn<>("Promo Headline");
         promoHeadlineCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-            cellData.getValue().getPromoHeadline() != null ? cellData.getValue().getPromoHeadline() : "N/A"
-        ));
+                cellData.getValue().getPromoHeadline() != null ? cellData.getValue().getPromoHeadline() : "N/A"));
 
         TableColumn<OrderHeader, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
 
         TableColumn<OrderHeader, String> orderDateCol = new TableColumn<>("Order Date");
-        orderDateCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOrderedAt().toString()));
+        orderDateCol.setCellValueFactory(
+                cellData -> new SimpleStringProperty(cellData.getValue().getOrderedAt().toString()));
 
         TableColumn<OrderHeader, Double> totalAmountCol = new TableColumn<>("Total Amount");
-        totalAmountCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTotalAmount()));
+        totalAmountCol
+                .setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTotalAmount()));
         totalAmountCol.setCellFactory(column -> new TableCell<OrderHeader, Double>() {
             @Override
             protected void updateItem(Double totalAmount, boolean empty) {
@@ -104,7 +104,8 @@ public class OrderHistoryView extends BorderPane {
             }
         });
 
-        orderTable.getColumns().addAll(idCol, promoCodeCol, promoHeadlineCol, statusCol, orderDateCol, totalAmountCol, detailCol);
+        orderTable.getColumns().addAll(idCol, promoCodeCol, promoHeadlineCol, statusCol, orderDateCol, totalAmountCol,
+                detailCol);
     }
 
     private void loadOrderData() {
@@ -112,7 +113,7 @@ public class OrderHistoryView extends BorderPane {
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null && currentUser instanceof model.Customer) {
             model.Customer customer = (model.Customer) currentUser;
-            Payload payload = orderHandler.getOrderHeadersByCustomerId(customer.getIdUser());
+            Payload payload = orderHandler.getCustomerOrderHeaders(customer.getIdUser());
             if (payload.isSuccess() && payload.getData() instanceof List) {
                 List<OrderHeader> orders = (List<OrderHeader>) payload.getData();
                 orderTable.getItems().addAll(orders);
