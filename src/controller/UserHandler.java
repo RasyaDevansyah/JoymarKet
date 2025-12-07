@@ -1,7 +1,7 @@
 package controller;
 
-import model.CustomerDAO; // Import CustomerDAO
-import model.Customer; // Import Customer class
+import model.CustomerDAO;
+import model.Customer;
 import model.Payload;
 import model.Session;
 import model.User;
@@ -10,33 +10,43 @@ import model.UserDAO;
 public class UserHandler {
 
     UserDAO userDAO = new UserDAO();
-    CustomerDAO customerDAO = new CustomerDAO(); // Initialize CustomerDAO
+    CustomerDAO customerDAO = new CustomerDAO();
     private Session session = Session.getInstance();
 
-    public Payload EditProfile(String fullName, String email, String password, String phone, String address,
-            String gender) { // Added gender
+    public Payload EditProfile(String fullName, String email, String newPassword, String confirmPassword, String phone,
+            String address,
+            String gender) {
 
         User currentUser = session.getCurrentUser();
         if (currentUser == null) {
             return new Payload("No user logged in to edit profile.", null, false);
         }
 
-        Payload validationResult = validateUserData(fullName, email, password, phone, address, gender, true); // Pass
-                                                                                                              // gender
+        String passwordToUse = currentUser.getPassword();
+
+        // Handle password update if provided
+        if (!newPassword.isEmpty() || !confirmPassword.isEmpty()) {
+            Payload passwordPayload = updatePassword(newPassword, confirmPassword);
+            if (!passwordPayload.isSuccess()) {
+                return passwordPayload;
+            }
+            passwordToUse = newPassword;
+        }
+
+        Payload validationResult = validateUserData(fullName, email, passwordToUse, phone, address, gender, true);
         if (!validationResult.isSuccess()) {
             return validationResult;
         }
 
-        boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, password, phone, address,
-                gender); // Pass gender
+        boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, passwordToUse, phone, address,
+                gender);
         if (success) {
-            // Update session user with new details
             currentUser.setFullName(fullName);
             currentUser.setEmail(email);
-            currentUser.setPassword(password);
+            currentUser.setPassword(passwordToUse);
             currentUser.setPhone(phone);
             currentUser.setAddress(address);
-            currentUser.setGender(gender); // Set gender
+            currentUser.setGender(gender);
             return new Payload("Profile updated successfully.", currentUser, true);
         } else {
             return new Payload("Failed to update profile.", null, false);
@@ -51,16 +61,22 @@ public class UserHandler {
         return new Payload("User not found.", null, false);
     }
 
-    public Payload SaveDataCustomer(String fullName, String email, String password, String phone, String address,
-            String gender) { // Added gender
+    public Payload SaveDataCustomer(String fullName, String email, String password, String confirmPassword,
+            String phone, String address,
+            String gender) {
 
-        Payload validationResult = validateUserData(fullName, email, password, phone, address, gender, false); // Pass
-                                                                                                               // gender
+        // Validate password confirmation
+        Payload passwordCheckPayload = validatePasswordMatch(password, confirmPassword);
+        if (!passwordCheckPayload.isSuccess()) {
+            return passwordCheckPayload;
+        }
+
+        Payload validationResult = validateUserData(fullName, email, password, phone, address, gender, false);
         if (!validationResult.isSuccess()) {
             return validationResult;
         }
 
-        boolean result = userDAO.saveUser(fullName, password, email, phone, address, gender, "CUSTOMER"); // Pass gender
+        boolean result = userDAO.saveUser(fullName, password, email, phone, address, gender, "CUSTOMER");
 
         if (!result) {
             return new Payload("Failed to register user", null, false);
@@ -71,7 +87,6 @@ public class UserHandler {
             return new Payload("Failed to retrieve registered user", null, false);
         }
 
-        // Create customer entry
         boolean customerCreated = customerDAO.createCustomer(user.getIdUser());
         if (!customerCreated) {
             return new Payload("Failed to create customer profile", null, false);
@@ -144,57 +159,94 @@ public class UserHandler {
 
         // Gender validation
         if (gender == null || gender.trim().isEmpty()) {
-            return new Payload("Gender must be selected", null, false);
+            return new Payload("Gender must be chosen", null, false);
         }
         if (!gender.equals("Male") && !gender.equals("Female")) {
             return new Payload("Invalid gender selected", null, false);
         }
 
-        // Email validation
+        // Email validation - must end with @gmail.com
         if (email == null || email.trim().isEmpty()) {
-            return new Payload("Email cannot be empty", null, false);
+            return new Payload("Email must be filled", null, false);
         }
-        if (!email.matches(
-                "^[\\w!#$%&\' *+/=?`{|}~^-]+(?:\\.[\\w!#$%&\' *+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
-            return new Payload("Invalid email format", null, false);
+        if (!email.endsWith("@gmail.com")) {
+            return new Payload("Email must end with @gmail.com", null, false);
         }
 
         User userByEmail = userDAO.getUserByEmail(email);
         if (isEdit) {
             User currentUser = session.getCurrentUser();
             if (userByEmail != null && !userByEmail.getIdUser().equals(currentUser.getIdUser())) {
-                return new Payload("Email is already registered by another user", null, false);
+                return new Payload("Email must be unique", null, false);
             }
         } else {
             if (userByEmail != null) {
-                return new Payload("Email is already registered", null, false);
+                return new Payload("Email must be unique", null, false);
             }
         }
 
-        // Password validation
+        // Password validation - at least 6 characters
         if (password == null || password.trim().isEmpty()) {
-            return new Payload("Password cannot be empty", null, false);
+            return new Payload("Password must be filled", null, false);
         }
-        if (password.length() < 6) { // Example: minimum 6 characters
-            return new Payload("Password must be at least 6 characters long", null, false);
+        if (password.length() < 6) {
+            return new Payload("Password must be at least 6 characters", null, false);
         }
 
-        // Phone validation
+        // Phone validation - numeric and 10-13 digits
         if (phone == null || phone.trim().isEmpty()) {
-            return new Payload("Phone number cannot be empty", null, false);
+            return new Payload("Phone must be filled", null, false);
         }
-        if (!phone.matches("^\\d+$")) { // Only digits
-            return new Payload("Phone number must contain only digits", null, false);
+
+        // Check if phone contains only digits
+        boolean isNumeric = true;
+        for (char c : phone.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                isNumeric = false;
+                break;
+            }
+        }
+
+        if (!isNumeric) {
+            return new Payload("Phone must be numeric", null, false);
+        }
+
+        if (phone.length() < 10 || phone.length() > 13) {
+            return new Payload("Phone must be 10–13 digits", null, false);
         }
 
         // Address validation
         if (address == null || address.trim().isEmpty()) {
-            return new Payload("Address cannot be empty", null, false);
-        }
-        if (address.length() < 4) { // Example: minimum 10 characters
-            return new Payload("Address must be at least 4 characters long", null, false);
+            return new Payload("Address must be filled", null, false);
         }
 
         return new Payload("Validation successful", null, true);
+    }
+
+    private Payload validatePasswordMatch(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            return new Payload("Passwords do not match", null, false);
+        }
+        return new Payload("Passwords match", null, true);
+    }
+
+    private Payload updatePassword(String newPassword, String confirmPassword) {
+        // If both are empty, skip password update
+        if (newPassword.isEmpty() && confirmPassword.isEmpty()) {
+            return new Payload("No password change", null, true);
+        }
+
+        // If one is filled but not both, return error
+        if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            return new Payload("Both password fields must be filled.", null, false);
+        }
+
+        // Validate passwords match
+        Payload matchPayload = validatePasswordMatch(newPassword, confirmPassword);
+        if (!matchPayload.isSuccess()) {
+            return matchPayload;
+        }
+
+        return new Payload("Password validation successful", null, true);
     }
 }

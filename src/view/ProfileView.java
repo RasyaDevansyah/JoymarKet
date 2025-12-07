@@ -49,7 +49,6 @@ public class ProfileView extends BorderPane {
         genderComboBox.getItems().addAll("Male", "Female"); // Add gender options
         genderComboBox.setPromptText("Select Gender"); // Placeholder text
 
-
         saveButton = new Button("Save Changes");
         saveButton.setOnAction(e -> handleSaveChanges());
 
@@ -104,7 +103,7 @@ public class ProfileView extends BorderPane {
             emailField.setText(currentUser.getEmail());
             phoneField.setText(currentUser.getPhone());
             addressField.setText(currentUser.getAddress());
-            genderComboBox.setValue(currentUser.getGender()); // Set selected gender
+            genderComboBox.setValue(currentUser.getGender());
         }
     }
 
@@ -115,23 +114,14 @@ public class ProfileView extends BorderPane {
         String confirmPassword = confirmPasswordField.getText();
         String phone = phoneField.getText();
         String address = addressField.getText();
-        String gender = genderComboBox.getValue(); // Get selected gender
+        String gender = genderComboBox.getValue();
 
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
-            String passwordToSave = currentUser.getPassword(); // Default to current password
-            if (!newPassword.isEmpty() || !confirmPasswordField.getText().isEmpty()) { // Check confirmPasswordField too
-                if (!newPassword.equals(confirmPassword)) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match.");
-                    return;
-                }
-                passwordToSave = newPassword;
-            }
-
-            Payload result = userHandler.EditProfile(fullName, email, passwordToSave, phone, address, gender); // Pass gender
+            Payload result = userHandler.EditProfile(fullName, email, newPassword, confirmPassword, phone, address,
+                    gender);
             if (result.isSuccess()) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
-                // Refresh the profile view to reflect the changes
                 loadProfileData();
                 Main.getInstance().changePageTo("Products");
             } else {

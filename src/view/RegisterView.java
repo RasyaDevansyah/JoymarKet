@@ -20,7 +20,7 @@ public class RegisterView extends BorderPane {
 
     private Label titleLabel, errorLabel;
     private TextField nameField, emailField, phoneField, addressField;
-    private PasswordField passwordField;
+    private PasswordField passwordField, confirmPasswordField;
     private ComboBox<String> genderComboBox; // New ComboBox for gender
     private Button registerButton;
     private Hyperlink loginLink;
@@ -36,7 +36,7 @@ public class RegisterView extends BorderPane {
         titleLabel.setFont(new Font("Arial", 24));
 
         errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red;"); 
+        errorLabel.setStyle("-fx-text-fill: red;");
 
         nameField = new TextField();
         nameField.setPromptText("Enter your full name");
@@ -44,6 +44,8 @@ public class RegisterView extends BorderPane {
         emailField.setPromptText("Enter your email");
         passwordField = new PasswordField();
         passwordField.setPromptText("Enter a password");
+        confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Confirm your password");
         phoneField = new TextField();
         phoneField.setPromptText("Enter your phone number");
         addressField = new TextField();
@@ -53,14 +55,13 @@ public class RegisterView extends BorderPane {
         genderComboBox.getItems().addAll("Male", "Female"); // Add gender options
         genderComboBox.setPromptText("Select Gender"); // Placeholder text
 
-
         registerButton = new Button("Register");
 
         registerButton.setOnAction(e -> {
             register();
         });
 
-        loginLink = new Hyperlink("Already have an account? Login"); 
+        loginLink = new Hyperlink("Already have an account? Login");
         loginLink.setOnAction(e -> {
             Main.getInstance().changePageTo("Login");
         });
@@ -78,11 +79,13 @@ public class RegisterView extends BorderPane {
         String name = getName();
         String email = getEmail();
         String password = getPassword();
+        String confirmPassword = getConfirmPassword();
         String phone = getPhone();
         String address = getAddress();
         String gender = getGender(); // Get selected gender
 
-        Payload result = userController.SaveDataCustomer(name, email, password, phone, address, gender); // Pass gender
+        Payload result = userController.SaveDataCustomer(name, email, password, confirmPassword, phone, address,
+                gender); // Pass gender
 
         if (result.isSuccess()) {
             // User is already set in Session by UserHandler
@@ -105,17 +108,19 @@ public class RegisterView extends BorderPane {
         formGrid.add(emailField, 1, 1);
         formGrid.add(new Label("Password:"), 0, 2);
         formGrid.add(passwordField, 1, 2);
-        formGrid.add(new Label("Phone:"), 0, 3);
-        formGrid.add(phoneField, 1, 3);
-        formGrid.add(new Label("Address:"), 0, 4);
-        formGrid.add(addressField, 1, 4);
-        formGrid.add(new Label("Gender:"), 0, 5);
-        formGrid.add(genderComboBox, 1, 5);
-        formGrid.add(errorLabel, 0, 6, 2, 1); // Add error label spanning 2 columns
+        formGrid.add(new Label("Confirm Password:"), 0, 3);
+        formGrid.add(confirmPasswordField, 1, 3);
+        formGrid.add(new Label("Phone:"), 0, 4);
+        formGrid.add(phoneField, 1, 4);
+        formGrid.add(new Label("Address:"), 0, 5);
+        formGrid.add(addressField, 1, 5);
+        formGrid.add(new Label("Gender:"), 0, 6);
+        formGrid.add(genderComboBox, 1, 6);
+        formGrid.add(errorLabel, 0, 7, 2, 1); // Add error label spanning 2 columns
         GridPane.setHalignment(errorLabel, HPos.CENTER);
-        formGrid.add(registerButton, 0, 7, 2, 1); // Span 2 columns, move to next row
+        formGrid.add(registerButton, 0, 8, 2, 1); // Span 2 columns, move to next row
         GridPane.setHalignment(registerButton, HPos.CENTER);
-        formGrid.add(loginLink, 0, 8, 2, 1); // Add login link below register button
+        formGrid.add(loginLink, 0, 9, 2, 1); // Add login link below register button
         GridPane.setHalignment(loginLink, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
@@ -138,6 +143,10 @@ public class RegisterView extends BorderPane {
 
     public String getPassword() {
         return passwordField.getText();
+    }
+
+    public String getConfirmPassword() {
+        return confirmPasswordField.getText();
     }
 
     public String getPhone() {
