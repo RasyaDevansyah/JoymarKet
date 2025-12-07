@@ -135,7 +135,6 @@ public class ViewAllOrdersView extends BorderPane {
         orderTable.getItems().clear();
         Payload payload = orderHandler.getAllOrderHeaders();
         if (payload.isSuccess() && payload.getData() instanceof List) {
-            @SuppressWarnings("unchecked")
             List<OrderHeader> orders = (List<OrderHeader>) payload.getData();
             orderTable.getItems().addAll(orders);
         } else {

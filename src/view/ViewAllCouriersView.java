@@ -42,11 +42,11 @@ public class ViewAllCouriersView extends BorderPane {
 
     private void initializeTableColumns() {
         TableColumn<Courier, String> idCol = new TableColumn<>("Courier ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("idUser")); // Assuming idUser is the courier ID
+        idCol.setCellValueFactory(new PropertyValueFactory<>("idUser"));
         idCol.setPrefWidth(100);
 
         TableColumn<Courier, String> nameCol = new TableColumn<>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName")); // Use fullName as per Courier model
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName")); 
         nameCol.setPrefWidth(200);
 
         TableColumn<Courier, String> vehicleTypeCol = new TableColumn<>("Vehicle Type");
@@ -64,7 +64,6 @@ public class ViewAllCouriersView extends BorderPane {
         courierTable.getItems().clear();
         Payload payload = courierHandler.getAllCouriers();
         if (payload.isSuccess() && payload.getData() instanceof List) {
-            @SuppressWarnings("unchecked")
             List<Courier> couriers = (List<Courier>) payload.getData();
             courierTable.getItems().addAll(couriers);
         } else {

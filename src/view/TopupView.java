@@ -40,12 +40,6 @@ public class TopupView extends BorderPane {
 
         amountField = new TextField();
         amountField.setPromptText("Enter top-up amount");
-        // Removed client-side numeric restriction as validation is now in UserHandler
-        // amountField.textProperty().addListener((observable, oldValue, newValue) -> {
-        //     if (!newValue.matches("\\d*(\\.\\d*)?")) {
-        //         amountField.setText(oldValue);
-        //     }
-        // });
 
         topupButton = new Button("Top Up");
         topupButton.setOnAction(e -> handleTopUp());
@@ -100,8 +94,8 @@ public class TopupView extends BorderPane {
 
         if (result.isSuccess()) {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Top-up successful!");
-            loadBalanceData(); // Refresh balance display
-            Main.getInstance().refreshNavbar(); // Refresh Navbar to show updated balance (if applicable)
+            loadBalanceData();
+            Main.getInstance().refreshNavbar(); 
             amountField.clear();
         } else {
             showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());

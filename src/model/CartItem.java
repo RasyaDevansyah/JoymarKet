@@ -2,7 +2,7 @@ package model;
 
 public class CartItem {
     private String idCustomer;
-    private Product product; // Change from String idProduct to Product object
+    private Product product;
     private int count;
 
     public CartItem(String idCustomer, Product product, int count) {

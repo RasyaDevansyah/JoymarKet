@@ -20,15 +20,15 @@ public class LoginView extends BorderPane {
 
     private UserHandler userController = new UserHandler();
 
-    private Label titleLabel, errorLabel, successLabel; // Add successLabel
+    private Label titleLabel, errorLabel, successLabel;
     private TextField emailField;
     private PasswordField passwordField;
     private Button loginButton;
-    private Hyperlink registerLink; // Add Hyperlink
+    private Hyperlink registerLink;
     private GridPane formGrid;
 
-    private static String registrationSuccessMessage = null; // Static field to hold the success message
-
+    private static String registrationSuccessMessage = null;
+    
     public LoginView() {
         initializeComponents();
         setupLayout();
@@ -41,8 +41,8 @@ public class LoginView extends BorderPane {
         errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
-        successLabel = new Label(); // Initialize successLabel
-        successLabel.setStyle("-fx-text-fill: green;"); // Style the success message in green
+        successLabel = new Label(); 
+        successLabel.setStyle("-fx-text-fill: green;");
 
         emailField = new TextField();
         emailField.setPromptText("Enter your email");
@@ -100,7 +100,7 @@ public class LoginView extends BorderPane {
         GridPane.setHalignment(successLabel, HPos.CENTER);
         formGrid.add(errorLabel, 0, 3, 2, 1); // Add error label
         GridPane.setHalignment(errorLabel, HPos.CENTER);
-        formGrid.add(loginButton, 0, 4, 2, 1); // Span 2 columns
+        formGrid.add(loginButton, 0, 4, 2, 1);
         GridPane.setHalignment(loginButton, HPos.CENTER);
         formGrid.add(registerLink, 0, 5, 2, 1); // Add register link
         GridPane.setHalignment(registerLink, HPos.CENTER);

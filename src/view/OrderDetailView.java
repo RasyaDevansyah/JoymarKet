@@ -30,10 +30,8 @@ public class OrderDetailView extends BorderPane {
     private OrderHandler orderHandler;
     private ProductDAO productDAO;
     private Label orderIdLabel;
-    // Removed customerIdLabel
-    // Removed promoIdLabel
-    private Label promoCodeLabel; // New Label
-    private Label promoHeadlineLabel; // New Label
+    private Label promoCodeLabel;
+    private Label promoHeadlineLabel;
     private Label statusLabel;
     private Label orderedAtLabel;
     private Label totalAmountLabel;
@@ -64,7 +62,7 @@ public class OrderDetailView extends BorderPane {
         detailTable = new TableView<>();
         initializeTableColumns();
 
-        backButton = new Button("Back"); // Changed button text to be more generic
+        backButton = new Button("Back");
         backButton.setOnAction(e -> {
             User currentUser = Session.getInstance().getCurrentUser();
             if (currentUser != null) {

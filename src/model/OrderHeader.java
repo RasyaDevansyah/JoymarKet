@@ -6,8 +6,8 @@ public class OrderHeader {
     private int idOrder;
     private String idCustomer;
     private String idPromo;
-    private String promoCode; // New field
-    private String promoHeadline; // New field
+    private String promoCode;
+    private String promoHeadline;
     private String status;
     private Date orderedAt;
     private double totalAmount;

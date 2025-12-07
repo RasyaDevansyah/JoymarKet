@@ -137,7 +137,6 @@ public class ProductsView extends BorderPane {
         productTable.getItems().clear();
         Payload payload = productHandler.getAllProducts();
         if (payload.isSuccess() && payload.getData() instanceof List) {
-            @SuppressWarnings("unchecked")
             List<Product> products = (List<Product>) payload.getData();
 
             User currentUser = Session.getInstance().getCurrentUser();

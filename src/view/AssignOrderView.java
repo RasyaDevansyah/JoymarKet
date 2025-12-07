@@ -107,7 +107,6 @@ public class AssignOrderView extends BorderPane {
     private void loadCouriers() {
         Payload payload = courierHandler.getAllCouriers();
         if (payload.isSuccess() && payload.getData() instanceof List) {
-            @SuppressWarnings("unchecked")
             List<Courier> couriers = (List<Courier>) payload.getData();
             ObservableList<Courier> observableCouriers = FXCollections.observableArrayList(couriers);
             courierComboBox.setItems(observableCouriers);

@@ -14,14 +14,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
-import javafx.scene.control.ComboBox; // Import ComboBox
+import javafx.scene.control.ComboBox;
 
 public class RegisterView extends BorderPane {
 
     private Label titleLabel, errorLabel;
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField passwordField, confirmPasswordField;
-    private ComboBox<String> genderComboBox; // New ComboBox for gender
+    private ComboBox<String> genderComboBox;
     private Button registerButton;
     private Hyperlink loginLink;
     private GridPane formGrid;
@@ -51,9 +51,9 @@ public class RegisterView extends BorderPane {
         addressField = new TextField();
         addressField.setPromptText("Enter your address");
 
-        genderComboBox = new ComboBox<>(); // Initialize ComboBox
-        genderComboBox.getItems().addAll("Male", "Female"); // Add gender options
-        genderComboBox.setPromptText("Select Gender"); // Placeholder text
+        genderComboBox = new ComboBox<>();
+        genderComboBox.getItems().addAll("Male", "Female");
+        genderComboBox.setPromptText("Select Gender");
 
         registerButton = new Button("Register");
 
@@ -76,26 +76,25 @@ public class RegisterView extends BorderPane {
         errorLabel.setText("");
 
         UserHandler userController = new UserHandler();
-        String name = getName();
-        String email = getEmail();
-        String password = getPassword();
-        String confirmPassword = getConfirmPassword();
-        String phone = getPhone();
-        String address = getAddress();
-        String gender = getGender(); // Get selected gender
+        String name = nameField.getText();
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+        String phone = phoneField.getText();
+        String address = addressField.getText();
+        String gender = genderComboBox.getValue();
 
         Payload result = userController.SaveDataCustomer(name, email, password, confirmPassword, phone, address,
-                gender); // Pass gender
+                gender);
 
         if (result.isSuccess()) {
-            // User is already set in Session by UserHandler
             System.out.println("Registration successful: " + result.getMessage());
-            // Set success message in LoginView before changing page
+
             LoginView.setSuccessMessage(result.getMessage());
             Main.getInstance().changePageTo("Login");
             errorLabel.setText("");
         } else {
-            errorLabel.setText(result.getMessage()); // Display the error message
+            errorLabel.setText(result.getMessage());
             System.out.println("Registration failed: " + result.getMessage());
         }
 
@@ -116,49 +115,18 @@ public class RegisterView extends BorderPane {
         formGrid.add(addressField, 1, 5);
         formGrid.add(new Label("Gender:"), 0, 6);
         formGrid.add(genderComboBox, 1, 6);
-        formGrid.add(errorLabel, 0, 7, 2, 1); // Add error label spanning 2 columns
+        formGrid.add(errorLabel, 0, 7, 2, 1);
+
         GridPane.setHalignment(errorLabel, HPos.CENTER);
-        formGrid.add(registerButton, 0, 8, 2, 1); // Span 2 columns, move to next row
+        formGrid.add(registerButton, 0, 8, 2, 1);
         GridPane.setHalignment(registerButton, HPos.CENTER);
-        formGrid.add(loginLink, 0, 9, 2, 1); // Add login link below register button
+        formGrid.add(loginLink, 0, 9, 2, 1);
         GridPane.setHalignment(loginLink, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
         setTop(titleLabel);
         setCenter(formGrid);
         BorderPane.setMargin(titleLabel, new Insets(20));
-    }
-
-    public Button getRegisterButton() {
-        return registerButton;
-    }
-
-    public String getName() {
-        return nameField.getText();
-    }
-
-    public String getEmail() {
-        return emailField.getText();
-    }
-
-    public String getPassword() {
-        return passwordField.getText();
-    }
-
-    public String getConfirmPassword() {
-        return confirmPasswordField.getText();
-    }
-
-    public String getPhone() {
-        return phoneField.getText();
-    }
-
-    public String getAddress() {
-        return addressField.getText();
-    }
-
-    public String getGender() {
-        return genderComboBox.getValue();
     }
 
 }

@@ -41,7 +41,6 @@ public class Connect {
 			st = con.createStatement();
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -52,7 +51,6 @@ public class Connect {
 			rs = st.executeQuery(query);
 			rsm = rs.getMetaData();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

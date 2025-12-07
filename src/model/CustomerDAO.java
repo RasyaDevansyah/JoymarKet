@@ -36,7 +36,7 @@ public class CustomerDAO {
     }
 
     public Customer getCustomerById(String idUser) {
-        String sql = "SELECT u.id_user, u.password, u.full_name, u.email, u.phone, u.address, u.gender, c.balance FROM users u JOIN customers c ON u.id_user = c.id_user WHERE u.id_user = ?"; // Added u.gender
+        String sql = "SELECT u.id_user, u.password, u.full_name, u.email, u.phone, u.address, u.gender, c.balance FROM users u JOIN customers c ON u.id_user = c.id_user WHERE u.id_user = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, idUser);
             ResultSet rs = pstmt.executeQuery();
@@ -47,10 +47,10 @@ public class CustomerDAO {
                 String email = rs.getString("email");
                 String phone = rs.getString("phone");
                 String address = rs.getString("address");
-                String gender = rs.getString("gender"); // Get gender
+                String gender = rs.getString("gender");
                 double balance = rs.getDouble("balance");
 
-                return new Customer(userId, fullName, email, password, phone, address, gender, balance); // Pass gender
+                return new Customer(userId, fullName, email, password, phone, address, gender, balance);
             }
         } catch (SQLException e) {
             e.printStackTrace();

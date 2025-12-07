@@ -21,16 +21,16 @@ public class User {
             this.role = role;
         }
 
-        // New constructor for registration (without idUser and role, assuming these are set later or default)
+
         public User(String fullName, String email, String password, String phone, String address, String gender) {
             this.fullName = fullName;
             this.email = email;
             this.password = password;
             this.phone = phone;
             this.address = address;
-            this.gender = gender; // Set gender
+            this.gender = gender;
             this.idUser = null;
-            this.role = "CUSTOMER"; // Default role for new users
+            this.role = "CUSTOMER"; 
         }
 
         public String getIdUser() {

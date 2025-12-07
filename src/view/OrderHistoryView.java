@@ -49,14 +49,6 @@ public class OrderHistoryView extends BorderPane {
         TableColumn<OrderHeader, Integer> idCol = new TableColumn<>("Order ID");
         idCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getIdOrder()));
 
-        // Removed Customer ID column as requested
-        // TableColumn<OrderHeader, String> customerIdCol = new TableColumn<>("Customer ID");
-        // customerIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdCustomer()));
-
-        // Removed Promo ID column as requested
-        // TableColumn<OrderHeader, String> promoIdCol = new TableColumn<>("Promo ID");
-        // promoIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdPromo()));
-
         TableColumn<OrderHeader, String> promoCodeCol = new TableColumn<>("Promo Code");
         promoCodeCol.setCellValueFactory(cellData -> new SimpleStringProperty(
             cellData.getValue().getPromoCode() != null ? cellData.getValue().getPromoCode() : "N/A"
@@ -122,7 +114,6 @@ public class OrderHistoryView extends BorderPane {
             model.Customer customer = (model.Customer) currentUser;
             Payload payload = orderHandler.getOrderHeadersByCustomerId(customer.getIdUser());
             if (payload.isSuccess() && payload.getData() instanceof List) {
-                @SuppressWarnings("unchecked")
                 List<OrderHeader> orders = (List<OrderHeader>) payload.getData();
                 orderTable.getItems().addAll(orders);
             } else {

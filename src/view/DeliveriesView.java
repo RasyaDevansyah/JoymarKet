@@ -141,7 +141,6 @@ public class DeliveriesView extends BorderPane {
         if (currentUser != null && currentUser.getRole().equals("COURIER")) {
             Payload payload = deliveryHandler.getDeliveriesByCourierId(currentUser.getIdUser());
             if (payload.isSuccess() && payload.getData() instanceof List) {
-                @SuppressWarnings("unchecked")
                 List<Delivery> deliveries = (List<Delivery>) payload.getData();
                 List<OrderHeader> orders = new ArrayList<>();
                 for (Delivery delivery : deliveries) {

@@ -71,8 +71,8 @@ public class ProfileView extends BorderPane {
         formGrid.add(phoneField, 1, 2);
         formGrid.add(new Label("Address:"), 0, 3);
         formGrid.add(addressField, 1, 3);
-        formGrid.add(new Label("Gender:"), 0, 4); // New row for Gender
-        formGrid.add(genderComboBox, 1, 4); // Add ComboBox to grid
+        formGrid.add(new Label("Gender:"), 0, 4);
+        formGrid.add(genderComboBox, 1, 4);
 
         VBox passwordSection = new VBox(10);
         Label passwordTitle = new Label("Update Password");

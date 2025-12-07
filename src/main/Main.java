@@ -3,18 +3,17 @@ package main;
 import javafx.application.Application;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import model.Session; // Import Session
+import model.Session; 
 import view.CartView;
 import view.LoginView;
 import view.Navbar;
 import view.OrderDetailView;
 import view.OrderHistoryView;
 import view.ProductsView;
-import view.AddProductView; // Import AddProductView
-import view.AssignOrderView; // Import AssignOrderView
+import view.AssignOrderView;
 import view.DeliveriesView;
 import view.EditProductView;
-import view.ProfileView; // Import ProfileView
+import view.ProfileView;
 import view.RegisterView;
 import view.TopupView;
 import view.ViewAllCouriersView;
@@ -31,13 +30,12 @@ public class Main extends Application {
 	private TopupView topupView;
 	private CartView cartView;
 	private OrderHistoryView orderHistoryView;
-	private OrderDetailView orderDetailView; // Add OrderDetailView
+	private OrderDetailView orderDetailView;
 	private LoginView loginView;
 	private RegisterView registerView;
-	private ProfileView profileView; // Add ProfileView
+	private ProfileView profileView; 
 
 	// Admin/Courier specific views
-	private AddProductView addProductView;
 	private AssignOrderView assignOrderView;
 	private DeliveriesView deliveriesView;
 	private EditProductView editProductView;
@@ -63,10 +61,9 @@ public class Main extends Application {
 		orderHistoryView = new OrderHistoryView();
 		loginView = new LoginView();
 		registerView = new RegisterView();
-		profileView = new ProfileView(); // Initialize ProfileView
+		profileView = new ProfileView();
 
 		// Initialize Admin/Courier specific views
-		addProductView = new AddProductView();
 		viewAllCouriersView = new ViewAllCouriersView();
 		viewAllOrdersView = new ViewAllOrdersView();
 
@@ -79,23 +76,24 @@ public class Main extends Application {
 
 	}
 
+	// Method to change pages/views
 	public void changePageTo(String pageName, String... params) {
 		refreshNavbar();
 		switch (pageName) {
 			case "Products":
-				productsView = new ProductsView(); // Refresh products view
+				productsView = new ProductsView(); 
 				mainLayout.setCenter(productsView);
 				break;
 			case "Topup":
-				topupView = new TopupView(); // Refresh topup view
+				topupView = new TopupView(); 
 				mainLayout.setCenter(topupView);
 				break;
 			case "Cart":
-				cartView = new CartView(); // Refresh cart view
+				cartView = new CartView(); 
 				mainLayout.setCenter(cartView);
 				break;
 			case "OrderHistory":
-				orderHistoryView = new OrderHistoryView(); // Refresh order history view
+				orderHistoryView = new OrderHistoryView();
 				mainLayout.setCenter(orderHistoryView);
 				break;
 			case "OrderDetail":
@@ -109,29 +107,25 @@ public class Main extends Application {
 				}
 				break;
 			case "Register":
-				registerView = new RegisterView(); // Refresh register view
+				registerView = new RegisterView(); 
 				mainLayout.setCenter(registerView);
 				break;
 			case "Login":
-				loginView = new LoginView(); // Refresh login view to show latest success message
+				loginView = new LoginView();
 				mainLayout.setCenter(loginView);
 				break;
 			case "Profile":
-				profileView = new ProfileView(); // Refresh profile view
+				profileView = new ProfileView();
 				mainLayout.setCenter(profileView);
 				break;
-			case "AddProduct": // New Admin view
-				addProductView = new AddProductView();
-				mainLayout.setCenter(addProductView);
-				break;
-			case "AssignOrder": // New Admin view
+			case "AssignOrder":
 				if (params.length > 0) {
 					int orderId = Integer.parseInt(params[0]);
 					assignOrderView = new AssignOrderView(orderId);
 					mainLayout.setCenter(assignOrderView);
 				} else {
 					System.err.println("Order ID not provided for AssignOrderView.");
-					mainLayout.setCenter(viewAllOrdersView); // Fallback to ViewAllOrdersView
+					mainLayout.setCenter(viewAllOrdersView);
 				}
 				break;
 			case "Deliveries":
@@ -157,7 +151,7 @@ public class Main extends Application {
 				mainLayout.setCenter(viewAllOrdersView);
 				break;
 			default:
-				mainLayout.setCenter(productsView); // Fallback to products view
+				mainLayout.setCenter(productsView);
 				break;
 		}
 	}
