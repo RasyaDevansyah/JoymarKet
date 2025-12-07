@@ -96,14 +96,27 @@ public class UserHandler {
     }
 
     public Payload Login(String email, String password) {
+        // Email validation - must be filled
+        if (email == null || email.trim().isEmpty()) {
+            return new Payload("Email must be filled", null, false);
+        }
 
+        // Password validation - must be filled
+        if (password == null || password.trim().isEmpty()) {
+            return new Payload("Password must be filled", null, false);
+        }
+
+        // Email validation - must match an email in the database
         User user = userDAO.getUserByEmail(email);
         if (user == null) {
-            return new Payload("User not found", null, false);
+            return new Payload("Email does not match any account in the database", null, false);
         }
+
+        // Password validation - must match password in the database
         if (!user.getPassword().equals(password)) {
-            return new Payload("Incorrect password", null, false);
+            return new Payload("Password does not match the account", null, false);
         }
+
         session.setCurrentUser(user); // Set the current user in the session
         return new Payload("Login successful", user, true);
     }
