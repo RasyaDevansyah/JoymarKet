@@ -18,7 +18,7 @@ public class DeliveryHandler {
         if (existingDelivery != null) {
             // Update existing delivery
             existingDelivery.setIdCourier(courierId);
-            existingDelivery.setStatus("Assigned"); // Or a more appropriate status
+            existingDelivery.setStatus("Assigned");
             if (deliveryDAO.updateDelivery(existingDelivery)) {
                 return new Payload("Courier reassigned successfully.", null, true);
             }

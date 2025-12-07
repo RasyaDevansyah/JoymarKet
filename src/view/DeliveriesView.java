@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import controller.DeliveryHandler;
 import controller.OrderHandler;
+import controller.UserHandler;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -32,11 +33,13 @@ public class DeliveriesView extends BorderPane {
     private TableView<OrderHeader> deliveryTable;
     private OrderHandler orderHandler;
     private DeliveryHandler deliveryHandler;
+    private UserHandler userHandler;
     private User currentUser;
 
     public DeliveriesView() {
         orderHandler = new OrderHandler();
         deliveryHandler = new DeliveryHandler();
+        userHandler = new UserHandler();
         currentUser = Session.getInstance().getCurrentUser();
 
         Label title = new Label("My Deliveries");
@@ -61,6 +64,34 @@ public class DeliveriesView extends BorderPane {
 
         TableColumn<OrderHeader, String> customerIdCol = new TableColumn<>("Customer ID");
         customerIdCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getIdCustomer()));
+
+        TableColumn<OrderHeader, String> customerNameCol = new TableColumn<>("Customer Name");
+        customerNameCol.setCellValueFactory(cellData -> {
+            Payload payload = userHandler.getUser(cellData.getValue().getIdCustomer());
+            User user = (payload.isSuccess() && payload.getData() instanceof User) ? (User) payload.getData() : null;
+            return new SimpleStringProperty(user != null ? user.getFullName() : "N/A");
+        });
+
+        TableColumn<OrderHeader, String> customerEmailCol = new TableColumn<>("Customer Email");
+        customerEmailCol.setCellValueFactory(cellData -> {
+            Payload payload = userHandler.getUser(cellData.getValue().getIdCustomer());
+            User user = (payload.isSuccess() && payload.getData() instanceof User) ? (User) payload.getData() : null;
+            return new SimpleStringProperty(user != null ? user.getEmail() : "N/A");
+        });
+
+        TableColumn<OrderHeader, String> customerPhoneCol = new TableColumn<>("Customer Phone");
+        customerPhoneCol.setCellValueFactory(cellData -> {
+            Payload payload = userHandler.getUser(cellData.getValue().getIdCustomer());
+            User user = (payload.isSuccess() && payload.getData() instanceof User) ? (User) payload.getData() : null;
+            return new SimpleStringProperty(user != null ? user.getPhone() : "N/A");
+        });
+
+        TableColumn<OrderHeader, String> customerAddressCol = new TableColumn<>("Customer Address");
+        customerAddressCol.setCellValueFactory(cellData -> {
+            Payload payload = userHandler.getUser(cellData.getValue().getIdCustomer());
+            User user = (payload.isSuccess() && payload.getData() instanceof User) ? (User) payload.getData() : null;
+            return new SimpleStringProperty(user != null ? user.getAddress() : "N/A");
+        });
 
         TableColumn<OrderHeader, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
@@ -133,7 +164,8 @@ public class DeliveriesView extends BorderPane {
             }
         });
 
-        deliveryTable.getColumns().addAll(idCol, customerIdCol, statusCol, orderDateCol, totalAmountCol, actionCol);
+        deliveryTable.getColumns().addAll(idCol, customerIdCol, customerNameCol, customerEmailCol, customerPhoneCol,
+                customerAddressCol, statusCol, orderDateCol, totalAmountCol, actionCol);
     }
 
     private void loadDeliveryData() {
@@ -146,7 +178,8 @@ public class DeliveriesView extends BorderPane {
                 for (Delivery delivery : deliveries) {
                     Payload orderPayload = orderHandler.getCustomerOrderHeader(Integer.parseInt(delivery.getIdOrder()));
                     if (orderPayload.isSuccess() && orderPayload.getData() instanceof OrderHeader) {
-                        orders.add((OrderHeader) orderPayload.getData());
+                        OrderHeader orderHeader = (OrderHeader) orderPayload.getData();
+                        orders.add(orderHeader);
                     }
                 }
                 deliveryTable.getItems().addAll(orders);
