@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import controller.UserHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox; // Import ComboBox
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import main.Main;
@@ -22,6 +23,7 @@ public class ProfileView extends BorderPane {
     private UserHandler userHandler = new UserHandler();
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField newPasswordField, confirmPasswordField;
+    private ComboBox<String> genderComboBox; // New ComboBox for gender
     private Button saveButton;
     private Button logoutButton;
     private Label titleLabel;
@@ -42,6 +44,11 @@ public class ProfileView extends BorderPane {
         addressField = new TextField();
         newPasswordField = new PasswordField();
         confirmPasswordField = new PasswordField();
+
+        genderComboBox = new ComboBox<>(); // Initialize ComboBox
+        genderComboBox.getItems().addAll("Male", "Female"); // Add gender options
+        genderComboBox.setPromptText("Select Gender"); // Placeholder text
+
 
         saveButton = new Button("Save Changes");
         saveButton.setOnAction(e -> handleSaveChanges());
@@ -65,6 +72,8 @@ public class ProfileView extends BorderPane {
         formGrid.add(phoneField, 1, 2);
         formGrid.add(new Label("Address:"), 0, 3);
         formGrid.add(addressField, 1, 3);
+        formGrid.add(new Label("Gender:"), 0, 4); // New row for Gender
+        formGrid.add(genderComboBox, 1, 4); // Add ComboBox to grid
 
         VBox passwordSection = new VBox(10);
         Label passwordTitle = new Label("Update Password");
@@ -95,6 +104,7 @@ public class ProfileView extends BorderPane {
             emailField.setText(currentUser.getEmail());
             phoneField.setText(currentUser.getPhone());
             addressField.setText(currentUser.getAddress());
+            genderComboBox.setValue(currentUser.getGender()); // Set selected gender
         }
     }
 
@@ -105,11 +115,12 @@ public class ProfileView extends BorderPane {
         String confirmPassword = confirmPasswordField.getText();
         String phone = phoneField.getText();
         String address = addressField.getText();
+        String gender = genderComboBox.getValue(); // Get selected gender
 
         User currentUser = Session.getInstance().getCurrentUser();
         if (currentUser != null) {
             String passwordToSave = currentUser.getPassword(); // Default to current password
-            if (!newPassword.isEmpty() || !confirmPassword.isEmpty()) {
+            if (!newPassword.isEmpty() || !confirmPasswordField.getText().isEmpty()) { // Check confirmPasswordField too
                 if (!newPassword.equals(confirmPassword)) {
                     showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match.");
                     return;
@@ -117,7 +128,7 @@ public class ProfileView extends BorderPane {
                 passwordToSave = newPassword;
             }
 
-            Payload result = userHandler.EditProfile(fullName, email, passwordToSave, phone, address);
+            Payload result = userHandler.EditProfile(fullName, email, passwordToSave, phone, address, gender); // Pass gender
             if (result.isSuccess()) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
                 // Refresh the profile view to reflect the changes

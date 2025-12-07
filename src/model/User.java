@@ -7,28 +7,30 @@ public class User {
         private String password;
         private String phone;
         private String address;
+        private String gender; // New field
         private String role;
 
-        public User(String idUser, String fullName, String email, String password, String phone, String address, String role) {
+        public User(String idUser, String fullName, String email, String password, String phone, String address, String gender, String role) {
             this.idUser = idUser;
             this.fullName = fullName;
             this.email = email;
             this.password = password;
             this.phone = phone;
             this.address = address;
+            this.gender = gender; // Set gender
             this.role = role;
         }
 
-        // New constructor for login (without idUser and role, assuming these are set later or default)
-        public User(String fullName, String email, String password, String phone, String address) {
+        // New constructor for registration (without idUser and role, assuming these are set later or default)
+        public User(String fullName, String email, String password, String phone, String address, String gender) {
             this.fullName = fullName;
             this.email = email;
             this.password = password;
             this.phone = phone;
             this.address = address;
-            // idUser and role can be set to null or default values
+            this.gender = gender; // Set gender
             this.idUser = null;
-            this.role = "Customer"; // Default role for new users
+            this.role = "CUSTOMER"; // Default role for new users
         }
 
         public String getIdUser() {
@@ -57,6 +59,15 @@ public class User {
 
         public String getAddress() {
             return address;
+        }
+
+        // New getter and setter for gender
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
         }
 
         public String getRole() {
@@ -90,7 +101,4 @@ public class User {
         public void setRole(String role) {
             this.role = role;
         }
-
-
-
     }

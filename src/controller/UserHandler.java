@@ -13,19 +13,22 @@ public class UserHandler {
     CustomerDAO customerDAO = new CustomerDAO(); // Initialize CustomerDAO
     private Session session = Session.getInstance();
 
-    public Payload EditProfile(String fullName, String email, String password, String phone, String address) {
+    public Payload EditProfile(String fullName, String email, String password, String phone, String address,
+            String gender) { // Added gender
 
         User currentUser = session.getCurrentUser();
         if (currentUser == null) {
             return new Payload("No user logged in to edit profile.", null, false);
         }
 
-        Payload validationResult = validateUserData(fullName, email, password, phone, address, true);
+        Payload validationResult = validateUserData(fullName, email, password, phone, address, gender, true); // Pass
+                                                                                                              // gender
         if (!validationResult.isSuccess()) {
             return validationResult;
         }
 
-        boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, password, phone, address);
+        boolean success = userDAO.updateUser(currentUser.getIdUser(), fullName, email, password, phone, address,
+                gender); // Pass gender
         if (success) {
             // Update session user with new details
             currentUser.setFullName(fullName);
@@ -33,6 +36,7 @@ public class UserHandler {
             currentUser.setPassword(password);
             currentUser.setPhone(phone);
             currentUser.setAddress(address);
+            currentUser.setGender(gender); // Set gender
             return new Payload("Profile updated successfully.", currentUser, true);
         } else {
             return new Payload("Failed to update profile.", null, false);
@@ -47,21 +51,28 @@ public class UserHandler {
         return new Payload("User not found.", null, false);
     }
 
-    public Payload SaveDataCustomer(String fullName, String email, String password, String phone, String address) {
+    public Payload SaveDataCustomer(String fullName, String email, String password, String phone, String address,
+            String gender) { // Added gender
 
-        Payload validationResult = validateUserData(fullName, email, password, phone, address, false);
+        Payload validationResult = validateUserData(fullName, email, password, phone, address, gender, false); // Pass
+                                                                                                               // gender
         if (!validationResult.isSuccess()) {
             return validationResult;
         }
 
-        String userId = userDAO.saveUser(fullName, password, email, phone, address, "CUSTOMER");
+        boolean result = userDAO.saveUser(fullName, password, email, phone, address, gender, "CUSTOMER"); // Pass gender
 
-        if (userId == null) {
+        if (!result) {
             return new Payload("Failed to register user", null, false);
         }
 
+        User user = userDAO.getUserByEmail(email);
+        if (user == null) {
+            return new Payload("Failed to retrieve registered user", null, false);
+        }
+
         // Create customer entry
-        boolean customerCreated = customerDAO.createCustomer(userId);
+        boolean customerCreated = customerDAO.createCustomer(user.getIdUser());
         if (!customerCreated) {
             return new Payload("Failed to create customer profile", null, false);
         }
@@ -111,7 +122,7 @@ public class UserHandler {
 
         boolean success = customerDAO.updateBalance(customerId, amount);
         if (success) {
-            // Update the current user's balance in the session
+            // Update the current user\'s balance in the session
             User currentUser = session.getCurrentUser();
             if (currentUser instanceof Customer) {
                 Customer customer = (Customer) currentUser;
@@ -125,10 +136,18 @@ public class UserHandler {
     }
 
     private Payload validateUserData(String fullName, String email, String password, String phone, String address,
-            boolean isEdit) {
+            String gender, boolean isEdit) { // Added gender parameter
         // FullName validation
         if (fullName == null || fullName.trim().isEmpty()) {
             return new Payload("Full name cannot be empty", null, false);
+        }
+
+        // Gender validation
+        if (gender == null || gender.trim().isEmpty()) {
+            return new Payload("Gender must be selected", null, false);
+        }
+        if (!gender.equals("Male") && !gender.equals("Female")) {
+            return new Payload("Invalid gender selected", null, false);
         }
 
         // Email validation
@@ -136,7 +155,7 @@ public class UserHandler {
             return new Payload("Email cannot be empty", null, false);
         }
         if (!email.matches(
-                "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
+                "^[\\w!#$%&\' *+/=?`{|}~^-]+(?:\\.[\\w!#$%&\' *+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
             return new Payload("Invalid email format", null, false);
         }
 

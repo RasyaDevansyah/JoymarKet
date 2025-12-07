@@ -10,26 +10,23 @@ public class UserDAO {
 
     private Connect connect = Connect.getInstance();
 
-    public String saveUser(String fullName, String password, String email, String phone, String address, String role) {
-        String sql = "INSERT INTO users (full_name, password, email, phone, address, role) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean saveUser(String fullName, String password, String email, String phone, String address, String gender, String role) { // Added gender
+        String sql = "INSERT INTO users (full_name, password, email, phone, address, gender, role) VALUES (?, ?, ?, ?, ?, ?, ?)"; // Updated SQL
         try (PreparedStatement pstmt = connect.preparedStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, fullName);
             pstmt.setString(2, password);
             pstmt.setString(3, email);
             pstmt.setString(4, phone);
             pstmt.setString(5, address);
-            pstmt.setString(6, role);
+            pstmt.setString(6, gender); // Set gender
+            pstmt.setString(7, role);
             pstmt.executeUpdate();
+            return true;
 
-            try (var rs = pstmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return String.valueOf(rs.getInt(1)); // Return the generated id_user
-                }
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Return null on failure
+        return false; // Return null on failure
     }
 
     public User getUserByEmail(String email) {
@@ -44,6 +41,7 @@ public class UserDAO {
                 String password = rs.getString("password");
                 String phone = rs.getString("phone");
                 String address = rs.getString("address");
+                String gender = rs.getString("gender"); // Get gender
                 String role = rs.getString("role");
 
                 switch (role) {
@@ -54,7 +52,7 @@ public class UserDAO {
                             ResultSet adminRs = adminPstmt.executeQuery();
                             if (adminRs.next()) {
                                 String emergencyContact = adminRs.getString("emergency_contact");
-                                return new Admin(idUser, fullName, userEmail, password, phone, address, emergencyContact);
+                                return new Admin(idUser, fullName, userEmail, password, phone, address, gender, emergencyContact); // Pass gender
                             }
                         }
                         break;
@@ -65,7 +63,7 @@ public class UserDAO {
                             ResultSet customerRs = customerPstmt.executeQuery();
                             if (customerRs.next()) {
                                 double balance = customerRs.getDouble("balance");
-                                return new Customer(idUser, fullName, userEmail, password, phone, address, balance);
+                                return new Customer(idUser, fullName, userEmail, password, phone, address, gender, balance); // Pass gender
                             }
                         }
                         break;
@@ -77,13 +75,13 @@ public class UserDAO {
                             if (courierRs.next()) {
                                 String vehicleType = courierRs.getString("vehicle_type");
                                 String vehiclePlate = courierRs.getString("vehicle_plate");
-                                return new Courier(idUser, fullName, userEmail, password, phone, address, vehicleType, vehiclePlate);
+                                return new Courier(idUser, fullName, userEmail, password, phone, address, gender, vehicleType, vehiclePlate); // Pass gender
                             }
                         }
                         break;
                 }
                 // Fallback to generic User if subclass data not found or role is unknown
-                return new User(idUser, fullName, userEmail, password, phone, address, role);
+                return new User(idUser, fullName, userEmail, password, phone, address, gender, role); // Pass gender
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,15 +90,16 @@ public class UserDAO {
     }
 
     public boolean updateUser(String idUser, String fullName, String email, String password, String phone,
-            String address) {
-        String sql = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, address = ? WHERE id_user = ?";
+            String address, String gender) { // Added gender
+        String sql = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, address = ?, gender = ? WHERE id_user = ?"; // Updated SQL
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
             pstmt.setString(1, fullName);
             pstmt.setString(2, email);
             pstmt.setString(3, password);
             pstmt.setString(4, phone);
             pstmt.setString(5, address);
-            pstmt.setString(6, idUser);
+            pstmt.setString(6, gender); // Set gender
+            pstmt.setString(7, idUser);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -121,6 +120,7 @@ public class UserDAO {
                 String password = rs.getString("password");
                 String phone = rs.getString("phone");
                 String address = rs.getString("address");
+                String gender = rs.getString("gender"); // Get gender
                 String role = rs.getString("role");
 
                 switch (role) {
@@ -131,7 +131,7 @@ public class UserDAO {
                             ResultSet adminRs = adminPstmt.executeQuery();
                             if (adminRs.next()) {
                                 String emergencyContact = adminRs.getString("emergency_contact");
-                                return new Admin(userId, fullName, userEmail, password, phone, address, emergencyContact);
+                                return new Admin(userId, fullName, userEmail, password, phone, address, gender, emergencyContact); // Pass gender
                             }
                         }
                         break;
@@ -142,7 +142,7 @@ public class UserDAO {
                             ResultSet customerRs = customerPstmt.executeQuery();
                             if (customerRs.next()) {
                                 double balance = customerRs.getDouble("balance");
-                                return new Customer(userId, fullName, userEmail, password, phone, address, balance);
+                                return new Customer(userId, fullName, userEmail, password, phone, address, gender, balance); // Pass gender
                             }
                         }
                         break;
@@ -154,15 +154,17 @@ public class UserDAO {
                             if (courierRs.next()) {
                                 String vehicleType = courierRs.getString("vehicle_type");
                                 String vehiclePlate = courierRs.getString("vehicle_plate");
-                                return new Courier(userId, fullName, userEmail, password, phone, address, vehicleType, vehiclePlate);
+                                return new Courier(userId, fullName, userEmail, password, phone, address, gender, vehicleType, vehiclePlate); // Pass gender
                             }
                         }
                         break;
                 }
                 // Fallback to generic User if subclass data not found or role is unknown
-                return new User(userId, fullName, userEmail, password, phone, address, role);
+                return new User(userId, fullName, userEmail, password, phone, address, gender, role); // Pass gender
             }
-        } catch (SQLException e) {
+        }
+
+         catch (SQLException e) {
             e.printStackTrace();
         }
         return null;

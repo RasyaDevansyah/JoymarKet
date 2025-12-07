@@ -14,12 +14,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import main.Main;
 import model.Payload;
+import javafx.scene.control.ComboBox; // Import ComboBox
 
 public class RegisterView extends BorderPane {
 
     private Label titleLabel, errorLabel;
     private TextField nameField, emailField, phoneField, addressField;
     private PasswordField passwordField;
+    private ComboBox<String> genderComboBox; // New ComboBox for gender
     private Button registerButton;
     private Hyperlink loginLink;
     private GridPane formGrid;
@@ -47,6 +49,11 @@ public class RegisterView extends BorderPane {
         addressField = new TextField();
         addressField.setPromptText("Enter your address");
 
+        genderComboBox = new ComboBox<>(); // Initialize ComboBox
+        genderComboBox.getItems().addAll("Male", "Female"); // Add gender options
+        genderComboBox.setPromptText("Select Gender"); // Placeholder text
+
+
         registerButton = new Button("Register");
 
         registerButton.setOnAction(e -> {
@@ -73,8 +80,9 @@ public class RegisterView extends BorderPane {
         String password = getPassword();
         String phone = getPhone();
         String address = getAddress();
+        String gender = getGender(); // Get selected gender
 
-        Payload result = userController.SaveDataCustomer(name, email, password, phone, address);
+        Payload result = userController.SaveDataCustomer(name, email, password, phone, address, gender); // Pass gender
 
         if (result.isSuccess()) {
             // User is already set in Session by UserHandler
@@ -101,11 +109,13 @@ public class RegisterView extends BorderPane {
         formGrid.add(phoneField, 1, 3);
         formGrid.add(new Label("Address:"), 0, 4);
         formGrid.add(addressField, 1, 4);
-        formGrid.add(errorLabel, 0, 5, 2, 1); // Add error label spanning 2 columns
+        formGrid.add(new Label("Gender:"), 0, 5);
+        formGrid.add(genderComboBox, 1, 5);
+        formGrid.add(errorLabel, 0, 6, 2, 1); // Add error label spanning 2 columns
         GridPane.setHalignment(errorLabel, HPos.CENTER);
-        formGrid.add(registerButton, 0, 6, 2, 1); // Span 2 columns, move to next row
+        formGrid.add(registerButton, 0, 7, 2, 1); // Span 2 columns, move to next row
         GridPane.setHalignment(registerButton, HPos.CENTER);
-        formGrid.add(loginLink, 0, 7, 2, 1); // Add login link below register button
+        formGrid.add(loginLink, 0, 8, 2, 1); // Add login link below register button
         GridPane.setHalignment(loginLink, HPos.CENTER);
 
         BorderPane.setAlignment(titleLabel, Pos.CENTER);
@@ -136,6 +146,10 @@ public class RegisterView extends BorderPane {
 
     public String getAddress() {
         return addressField.getText();
+    }
+
+    public String getGender() {
+        return genderComboBox.getValue();
     }
 
 }

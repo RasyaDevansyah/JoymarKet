@@ -26,6 +26,7 @@ CREATE TABLE users (
         password VARCHAR(255) NOT NULL,
         phone VARCHAR(20),
         address TEXT,
+        gender ENUM("Male", "Female") NOT NULL,
         role ENUM("ADMIN", "CUSTOMER", "COURIER") NOT NULL
 );
 
@@ -125,45 +126,45 @@ CREATE TABLE cart_items (
 --
 
 -- Admin User (1)
-INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-("Admin User", "admin@joymarket.com", "12345678", "1234567890", "Admin Office, Joymarket Tower", "ADMIN");
+INSERT INTO users (full_name,  email, password, phone, address, gender, role) VALUES
+("Admin User", "admin@joymarket.com", "12345678", "1234567890", "Admin Office, Joymarket Tower", "Male", "ADMIN");
 INSERT INTO admins (id_user, emergency_contact) VALUES
 ((SELECT id_user FROM users WHERE email = "admin@joymarket.com"), "Admin Emergency Contact");
 
 -- Customer User (1)
-INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-("Customer User", "customer@joymarket.com", "12345678", "0812345678", "Customer Home, Joymarket City", "CUSTOMER");
+INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
+("Customer User", "customer@joymarket.com", "12345678", "0812345678", "Customer Home, Joymarket City", "Female", "CUSTOMER");
 INSERT INTO customers (id_user, balance) VALUES
 ((SELECT id_user FROM users WHERE email = "customer@joymarket.com"), 1000.00);
 
 -- Courier Users (3)
-INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-("Courier User 1", "courier1@joymarket.com", "12345678", "0821000001", "Courier Depot 1, Joymarket City", "COURIER");
+INSERT INTO users (full_name, email, password, phone, address, gender,role) VALUES
+("Courier User 1", "courier1@joymarket.com", "12345678", "0821000001", "Courier Depot 1, Joymarket City", "Male" , "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
 ((SELECT id_user FROM users WHERE email = "courier1@joymarket.com"), "Motorcycle", "B 1001 ABC");
 
-INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-("Courier User 2", "courier2@joymarket.com", "12345678", "0821000002", "Courier Depot 2, Joymarket City", "COURIER");
+INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
+("Courier User 2", "courier2@joymarket.com", "12345678", "0821000002", "Courier Depot 2, Joymarket City", "Male", "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
 ((SELECT id_user FROM users WHERE email = "courier2@joymarket.com"), "Car", "B 2002 DEF");
 
-INSERT INTO users (full_name, email, password, phone, address, role) VALUES
-("Courier User 3", "courier3@joymarket.com", "12345678", "0821000003", "Courier Depot 3, Joymarket City", "COURIER");
+INSERT INTO users (full_name, email, password, phone, address, gender, role) VALUES
+("Courier User 3", "courier3@joymarket.com", "12345678", "0821000003", "Courier Depot 3, Joymarket City", "Male", "COURIER");
 INSERT INTO couriers (id_user, vehicle_type, vehicle_plate) VALUES
 ((SELECT id_user FROM users WHERE email = "courier3@joymarket.com"), "Van", "B 3003 GHI");
 
 -- Products (10 products with 20 stocks each) - unchanged from original
 INSERT INTO products (name, price, stock, category) VALUES
-("Premium Coffee Beans", 15.99, 20, "Beverages"),
-("Organic Green Tea", 12.50, 20, "Beverages"),
-("Artisan Bread", 5.75, 20, "Bakery"),
-("Fresh Milk (1L)", 3.20, 20, "Dairy"),
-("Chicken Breast (1kg)", 10.00, 20, "Meat"),
-("Assorted Vegetables Pack", 8.99, 20, "Produce"),
-("Local Honey (500g)", 9.50, 20, "Pantry"),
-("Olive Oil (750ml)", 18.25, 20, "Pantry"),
-("Dark Chocolate Bar", 4.00, 20, "Snacks"),
-("Sparkling Water (6-pack)", 7.80, 20, "Beverages");
+("Premium Coffee Beans", 15900, 20, "Beverages"),
+("Organic Green Tea", 12500, 20, "Beverages"),
+("Artisan Bread", 5750, 20, "Bakery"),
+("Fresh Milk (1L)", 18000, 20, "Dairy"),
+("Chicken Breast (1kg)", 40000, 20, "Meat"),
+("Assorted Vegetables Pack", 8990, 20, "Produce"),
+("Local Honey (500g)", 9500, 20, "Pantry"),
+("Olive Oil (750ml)", 18250, 20, "Pantry"),
+("Dark Chocolate Bar", 7000, 20, "Snacks"),
+("Sparkling Water (6-pack)", 4800, 20, "Beverages");
 
 -- Promos (3)
 INSERT INTO promos (code, headline, discount_percentage) VALUES

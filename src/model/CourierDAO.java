@@ -14,7 +14,7 @@ public class CourierDAO {
 
     public List<Courier> getAllCouriers() {
         List<Courier> couriers = new ArrayList<>();
-        String sql = "SELECT u.id_user, u.full_name, u.email, u.password, u.phone, u.address, c.vehicle_type, c.vehicle_plate " +
+        String sql = "SELECT u.id_user, u.full_name, u.email, u.password, u.phone, u.address, u.gender, c.vehicle_type, c.vehicle_plate " + // Added u.gender
                      "FROM users u JOIN couriers c ON u.id_user = c.id_user " +
                      "WHERE u.role = 'COURIER'";
         try (PreparedStatement pstmt = connect.preparedStatement(sql);
@@ -27,6 +27,7 @@ public class CourierDAO {
                     rs.getString("password"),
                     rs.getString("phone"),
                     rs.getString("address"),
+                    rs.getString("gender"), // Pass gender
                     rs.getString("vehicle_type"),
                     rs.getString("vehicle_plate")
                 ));
@@ -38,7 +39,7 @@ public class CourierDAO {
     }
 
     public Courier getCourierById(String courierId) {
-        String sql = "SELECT u.id_user, u.full_name, u.email, u.password, u.phone, u.address, c.vehicle_type, c.vehicle_plate " +
+        String sql = "SELECT u.id_user, u.full_name, u.email, u.password, u.phone, u.address, u.gender, c.vehicle_type, c.vehicle_plate " + // Added u.gender
                      "FROM users u JOIN couriers c ON u.id_user = c.id_user " +
                      "WHERE u.id_user = ?";
         try (PreparedStatement pstmt = connect.preparedStatement(sql)) {
@@ -52,6 +53,7 @@ public class CourierDAO {
                         rs.getString("password"),
                         rs.getString("phone"),
                         rs.getString("address"),
+                        rs.getString("gender"), // Pass gender
                         rs.getString("vehicle_type"),
                         rs.getString("vehicle_plate")
                     );

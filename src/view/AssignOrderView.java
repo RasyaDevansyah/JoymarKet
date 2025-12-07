@@ -2,6 +2,7 @@ package view;
 
 import controller.CourierHandler;
 import controller.OrderHandler;
+import controller.UserHandler;
 import controller.DeliveryHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +30,7 @@ public class AssignOrderView extends BorderPane {
     private OrderHandler orderHandler;
     private CourierHandler courierHandler;
     private DeliveryHandler deliveryHandler;
+    private UserHandler userHandler;
     private Label orderIdLabel;
     private Label customerNameLabel;
     private Label totalAmountLabel;
@@ -40,6 +42,7 @@ public class AssignOrderView extends BorderPane {
         this.orderHandler = new OrderHandler();
         this.courierHandler = new CourierHandler();
         this.deliveryHandler = new DeliveryHandler();
+        this.userHandler = new UserHandler();
 
         initializeComponents();
         loadOrderDetails();
@@ -81,11 +84,20 @@ public class AssignOrderView extends BorderPane {
         Payload payload = orderHandler.getOrderHeaderById(orderId);
         if (payload.isSuccess() && payload.getData() instanceof OrderHeader) {
             OrderHeader order = (OrderHeader) payload.getData();
-            orderIdLabel.setText("Order ID: " + order.getIdOrder());
-            // You'll need a CustomerDAO to get the customer's name
-            // For now, using customer ID
-            customerNameLabel.setText("Customer ID: " + order.getIdCustomer());
-            totalAmountLabel.setText(String.format("Total Amount: Rp %.2f", order.getTotalAmount()));
+
+            orderIdLabel.setText(String.valueOf(order.getIdOrder()));
+
+            String id = order.getIdCustomer().toString();
+            Payload customerPayload = userHandler.GetUser(id);
+
+            if (customerPayload.isSuccess() && customerPayload.getData() instanceof model.Customer) {
+                model.Customer customer = (model.Customer) customerPayload.getData();
+                customerNameLabel.setText(customer.getFullName());
+            } else {
+                customerNameLabel.setText("Unknown Customer");
+            }
+
+            totalAmountLabel.setText(String.format("Rp %.2f", order.getTotalAmount()));
         } else {
             showAlert(AlertType.ERROR, "Error", "Failed to load order details: " + payload.getMessage());
             Main.getInstance().changePageTo("ViewAllOrders");

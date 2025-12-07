@@ -16,8 +16,7 @@ import model.OrderHeaderDAO;
 import model.Payload;
 import model.Product;
 import model.ProductDAO;
-import model.PromoDAO; // Import PromoDAO
-import model.Session;
+import model.PromoDAO;
 import model.User;
 
 public class OrderHandler {
